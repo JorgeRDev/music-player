@@ -20,8 +20,6 @@ import SongInfo from "../lib/songInfo";
 import { base64ToUint8Array } from "uint8array-extras";
 import Menu from "./components/MenuComponent.vue";
 
-/* Music library */
-
 const musicLibraryPaths: Ref<string[]> = ref([]);
 
 const isFullScreen: Ref<boolean | undefined> = ref(undefined);
