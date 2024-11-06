@@ -43,6 +43,9 @@
   box-sizing: border-box;
   margin: 0;
   text-rendering: geometricprecision;
+
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 html {

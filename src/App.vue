@@ -137,17 +137,25 @@ provide("songsLibrary", songsLibrary);
 <template>
   <TitleBar v-if="!isFullScreen" />
   <main v-if="isFullScreen" class="fullscreen">
-    <div class="fullscreen-content">
-      <div>
+    <div class="fullscreen-content text-align:center">
+      <div class="flex flex:column align-items:center">
         <img
           v-if="actualSongInfo != undefined"
           :src="getURL(actualSongInfo.frontCover)"
           alt=""
-          class="aspect:1/1 r:2rem w:20rem"
+          class="aspect:1/1 r:2rem w:20rem shadow:2|2|10rem|2rem|rgba(0,0,0,0.7) margin-bottom:3rem"
         />
-        <p class="text:center f:medium f:26">{{ actualSongInfo?.title }}</p>
-        <p class="text:center f:medium f:22">{{ actualSongInfo?.album }}</p>
-        <p class="text:center f:medium f:20">{{ actualSongInfo?.artist }}</p>
+        <div class="">
+          <p class="f:medium f:26 text-shadow:0|0|60|rgba(255,255,255,1)">
+            {{ actualSongInfo?.title }}
+          </p>
+          <p class="f:medium f:22 text-shadow:0|0|60|rgba(255,255,255,1)">
+            {{ actualSongInfo?.album }}
+          </p>
+          <p class="f:medium f:20 text-shadow:0|0|60|rgba(255,255,255,1)">
+            {{ actualSongInfo?.artist }}
+          </p>
+        </div>
       </div>
     </div>
     <PlayerComponent />
@@ -163,7 +171,6 @@ provide("songsLibrary", songsLibrary);
 
 <style>
 #app {
-  padding-top: 2rem;
 }
 
 .fullscreen {
@@ -173,6 +180,7 @@ provide("songsLibrary", songsLibrary);
   background-image: var(--player-background-img);
   background-size: cover;
   background-position-y: center;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .fullscreen::before {
@@ -182,12 +190,7 @@ provide("songsLibrary", songsLibrary);
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.6
-  ); /* Color de fondo del seudoelemento */
+  /* Color de fondo del seudoelemento */
   mix-blend-mode: multiply; /* Modo de mezcla para crear el efecto de transparencia */
   backdrop-filter: blur(50px);
 }
