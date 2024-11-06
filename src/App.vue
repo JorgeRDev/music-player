@@ -22,9 +22,7 @@ import Menu from "./components/MenuComponent.vue";
 
 /* Music library */
 
-const musicLibraryPaths: Ref<string[]> = ref([
-  "C:\\Users\\jorge\\Music\\Música No Original",
-]);
+const musicLibraryPaths: Ref<string[]> = ref([]);
 
 const isFullScreen: Ref<boolean | undefined> = ref(undefined);
 
@@ -113,11 +111,6 @@ watchEffect(() => {
 
     isFullScreen.value = _isFullScreen;
   });
-});
-
-// testing
-onMounted(() => {
-  updateSongs();
 });
 
 provide("addMusicLibraryPath", addMusicLibraryPath);
