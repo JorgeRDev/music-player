@@ -1,5 +1,7 @@
 /// <reference types="vite-plugin-electron/electron-env" />
 
+import type SongInfo from "../src/lib/songInfo";
+
 declare namespace NodeJS {
   interface ProcessEnv {
     /**
@@ -22,18 +24,20 @@ declare namespace NodeJS {
 }
 
 // Used in Renderer process, expose in `preload.ts`
-interface Window {
-  FileSystem: {
-    chooseDirectories: () => Promise<string[] | null>;
-  };
-  MusicManager: {
-    getSongsInfoFromDirectories: (
-      dirs: string[]
-    ) => Promise<Map<string, SongInfo> | null>;
-    getSongInfo: (songBuffer: Buffer) => Promise<SongInfo>;
-    getSong: (songPath) => Promise<Buffer | undefined>;
-  };
-  App: {
-    onFullScreen: (callback: (arg: boolean) => void) => void;
-  };
+declare global {
+  interface Window {
+    FileSystem: {
+      chooseDirectories: () => Promise<string[] | null>;
+    };
+    MusicManager: {
+      getSongsInfoFromDirectories: (
+        dirs: string[]
+      ) => Promise<Map<string, SongInfo> | null>;
+      getSongInfo: (songBuffer: Buffer) => Promise<SongInfo>;
+      getSong: (songPath) => Promise<Buffer | undefined>;
+    };
+    App: {
+      onFullScreen: (callback: (arg: boolean) => void) => void;
+    };
+  }
 }

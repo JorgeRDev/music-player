@@ -1,18 +1,26 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, Ref, ref } from "vue"
-import SongInfo from "lib/songInfo"
-import { base64ToUint8Array } from "uint8array-extras"
+import { computed, inject, onMounted, Ref, ref } from "vue";
+import SongInfo from "lib/songInfo";
+import { base64ToUint8Array } from "uint8array-extras";
 
-const actualSongURL: Ref<string | undefined> = inject("actualSongURL", ref(""))
-const actualSongInfo: Ref<SongInfo | null> = inject("actualSongInfo", ref(null))
+const isFullScreen: Ref<boolean | undefined> = inject(
+  "isFullScreen",
+  ref(undefined)
+);
+
+const actualSongURL: Ref<string | undefined> = inject("actualSongURL", ref(""));
+const actualSongInfo: Ref<SongInfo | null> = inject(
+  "actualSongInfo",
+  ref(null)
+);
 const actualSongFrontCoverURL: Ref<string> = inject(
   "actualSongFrontCoverURL",
-  ref(""),
-)
+  ref("")
+);
 </script>
 
 <template>
-  <div id="player" class="player">
+  <div v-if="!isFullScreen" id="player" class="player">
     <div class="player-content">
       <div class="pl:2rem pr:1rem">
         <img
@@ -28,7 +36,6 @@ const actualSongFrontCoverURL: Ref<string> = inject(
         </p>
       </div>
     </div>
-    <audio :src="actualSongURL" class="" autoplay></audio>
   </div>
 </template>
 

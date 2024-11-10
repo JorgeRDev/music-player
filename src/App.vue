@@ -1,22 +1,10 @@
 <script setup lang="ts">
-import {
-  computed,
-  inject,
-  onMounted,
-  provide,
-  readonly,
-  ref,
-  Ref,
-  watchEffect,
-  ComputedRef,
-} from "vue";
+import { inject, provide, readonly, ref, Ref, watchEffect } from "vue";
 import "node:path";
 import "node:fs";
-import { ipcRenderer } from "electron";
 import TitleBar from "./components/TitleBar.vue";
 import PlayerComponent from "./components/PlayerComponent.vue";
-import { watch } from "node:fs";
-import SongInfo from "../lib/songInfo";
+import type SongInfo from "../lib/songInfo";
 import { base64ToUint8Array } from "uint8array-extras";
 import Menu from "./components/MenuComponent.vue";
 
@@ -24,12 +12,12 @@ const musicLibraryPaths: Ref<string[]> = ref([]);
 
 const isFullScreen: Ref<boolean | undefined> = ref(undefined);
 
-const actualSongURL: Ref<string> = ref("");
+const actualSongURL: Ref<SongPath> = ref("");
 const actualSongInfo: Ref<SongInfo | null> = ref(null);
-const actualSongFrontCoverURL: Ref<string> = ref("");
+const actualSongFrontCoverURL: Ref<SongPath> = ref("");
 
 const songsLibrary: Ref<Map<string, SongInfo>> = ref(new Map());
-const songsUrlLibrary: Ref<string[]> = ref([]);
+const songsUrlLibrary: Ref<SongPath[]> = ref([]);
 
 const addMusicLibraryPath = (dir: string) => {
   if (dir) {
@@ -73,7 +61,7 @@ const getURL = (data: string | undefined) => {
   }
 };
 
-const playSong = async (songPath: string) => {
+const playSong = async (songPath: SongPath) => {
   console.log(`executing playSong()`);
 
   const songBuffer = await window.MusicManager.getSong(songPath);
@@ -119,6 +107,7 @@ provide("playSong", playSong);
 provide("actualSongURL", actualSongURL);
 provide("actualSongInfo", actualSongInfo);
 provide("actualSongFrontCoverURL", actualSongFrontCoverURL);
+provide("isFullScreen", isFullScreen);
 
 /* WARNING: This maybe doesn't be used */
 provide("songsLibraryURL", songsUrlLibrary);
@@ -127,23 +116,39 @@ provide("songsLibrary", songsLibrary);
 
 <template>
   <TitleBar v-if="!isFullScreen" />
-  <main v-if="isFullScreen" class="fullscreen">
-    <div class="fullscreen-content text-align:center">
-      <div class="flex flex:column align-items:center">
-        <img
-          v-if="actualSongInfo != undefined"
-          :src="getURL(actualSongInfo.frontCover)"
-          alt=""
-          class="aspect:1/1 r:2rem w:20rem shadow:2|2|10rem|2rem|rgba(0,0,0,0.7) margin-bottom:3rem"
-        />
+  <main v-show="isFullScreen" class="fullscreen cursor:none">
+    <div class="bg:rgba(0,0,0,0.377) h:100vh">
+      <div class="fullscreen-content text-align:center">
+        <div class="flex flex:column align-items:center">
+          <div
+            class="aspect:1/1 w:24.6rem flex r:3rem place-content:center align-items:center shadow:2|2|24rem|1rem|rgba(80,80,80,0.315) margin-bottom:3rem"
+          >
+            <div
+              class="aspect:1/1 overflow:hidden r:2.8rem w:24rem max-w:24rem flex place-content:center align-items:center"
+            >
+              <img
+                v-if="actualSongInfo != undefined"
+                :src="getURL(actualSongInfo.frontCover)"
+                alt=""
+                class="object-fit:cover aspect:1/1 r:2.3rem w:24rem shadow:2|2|120rem|15rem|rgba(131,131,131,0.082)"
+              />
+            </div>
+          </div>
+        </div>
         <div class="">
-          <p class="f:medium f:26 text-shadow:0|0|60|rgba(255,255,255,1)">
+          <p
+            class="f:white f:medium f:26 text-shadow:0|0|10|rgba(218,218,218,0.432) border"
+          >
             {{ actualSongInfo?.title }}
           </p>
-          <p class="f:medium f:22 text-shadow:0|0|60|rgba(255,255,255,1)">
+          <p
+            class="f:white f:medium f:22 text-shadow:0|0|10|rgba(214,214,214,0.568)"
+          >
             {{ actualSongInfo?.album }}
           </p>
-          <p class="f:medium f:20 text-shadow:0|0|60|rgba(255,255,255,1)">
+          <p
+            class="f:white f:medium f:20 text-shadow:0|0|10|rgba(207,207,207,0.699)"
+          >
             {{ actualSongInfo?.artist }}
           </p>
         </div>
@@ -151,13 +156,16 @@ provide("songsLibrary", songsLibrary);
     </div>
     <PlayerComponent />
   </main>
-  <main v-else class="not-fullscreen">
+  <main v-show="!isFullScreen" class="not-fullscreen mt:2rem">
     <Menu />
     <div>
-      <RouterView />
+      <KeepAlive include="home, settings">
+        <RouterView />
+      </KeepAlive>
     </div>
     <PlayerComponent />
   </main>
+  <audio :src="actualSongURL" class="" autoplay loop></audio>
 </template>
 
 <style>
@@ -183,17 +191,16 @@ provide("songsLibrary", songsLibrary);
   height: 100%;
   /* Color de fondo del seudoelemento */
   mix-blend-mode: multiply; /* Modo de mezcla para crear el efecto de transparencia */
-  backdrop-filter: blur(50px);
+  backdrop-filter: blur(30px);
 }
 
 .fullscreen-content {
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
   position: absolute;
   align-items: center;
   place-content: center;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
 }
 </style>

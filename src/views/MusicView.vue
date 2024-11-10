@@ -1,44 +1,79 @@
 <script setup lang="ts">
-import SongInfo from "lib/songInfo"
-import { base64ToUint8Array } from "uint8array-extras"
-import { inject, ref, Ref } from "vue"
+import SongInfo from "lib/songInfo";
+import { base64ToUint8Array } from "uint8array-extras";
+import {
+  inject,
+  onActivated,
+  onBeforeUpdate,
+  onDeactivated,
+  onMounted,
+  onUnmounted,
+  onUpdated,
+  ref,
+  Ref,
+} from "vue";
+import { onBeforeRouteUpdate } from "vue-router";
 
-const actualSong: Ref<string> = inject("actualSong", ref("There is no song"))
+const actualSong: Ref<string> = inject("actualSong", ref("There is no song"));
 
 const playSong = inject("playSong", async (songPath: string) => {
-  console.log(`executing playSong()`)
+  console.log(`executing playSong()`);
 
-  const songBuffer = await window.MusicManager.getSong(songPath)
+  const songBuffer = await window.MusicManager.getSong(songPath);
   if (songBuffer != undefined) {
-    const songBlob = new Blob([songBuffer])
-    actualSong.value = URL.createObjectURL(songBlob)
+    const songBlob = new Blob([songBuffer]);
+    actualSong.value = URL.createObjectURL(songBlob);
   }
-})
+});
 
 const songsLibrary: Ref<Map<string, SongInfo>> = inject(
   "songsLibrary",
-  ref(new Map()),
-)
+  ref(new Map())
+);
 
 const getURL = inject("getUrl", (data: string | undefined) => {
   if (data != undefined) {
     const frontCoverBlob = new Blob([base64ToUint8Array(data)], {
       type: "image",
-    })
-    const frontCoverURL = URL.createObjectURL(frontCoverBlob)
+    });
+    const frontCoverURL = URL.createObjectURL(frontCoverBlob);
 
-    return frontCoverURL
+    return frontCoverURL;
   }
-})
+});
+
+onBeforeRouteUpdate(() => {
+  console.log(`musicView is going to update the route`);
+});
+onBeforeUpdate(() => {
+  console.log(`musicView is going to update`);
+});
+onActivated(() => {
+  console.log(`musicView has been activated.`);
+});
+
+onDeactivated(() => {
+  console.log(`musicView has been deactivated.`);
+});
+
+onMounted(() => {
+  console.log(`musicView has been mounted`);
+});
+onUnmounted(() => {
+  console.log(`musicView has been unmounted`);
+});
+onUpdated(() => {
+  console.log(`musicView has been updated`);
+});
 </script>
 
 <template>
-  <div class="view flex-direction:column gap:1rem max-h:80vh">
+  <div class="view flex-direction:column gap:1rem max-h:80vh max-w:80vw">
     <h1>Music</h1>
     <button @click="">Select song</button>
     <div
       v-for="song in songsLibrary"
-      class="flex align-items::center max-h:5rem gap:1rem align-items:center f:medium place-content:space-between"
+      class="songItem flex align-items::center max-h:5rem gap:1rem align-items:center f:medium place-content:space-between"
     >
       <img
         v-if="getURL(song[1].frontCover) != undefined"
@@ -60,5 +95,9 @@ const getURL = inject("getUrl", (data: string | undefined) => {
 <style>
 .view {
   overflow-y: scroll;
+}
+
+.songItem {
+  content-visibility: auto;
 }
 </style>
