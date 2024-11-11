@@ -1,57 +1,53 @@
 <script setup lang="ts">
-import SongInfo from "lib/songInfo"
-import { base64ToUint8Array } from "uint8array-extras"
-import { inject, ref, Ref } from "vue"
+import { inject, ref, Ref } from "vue";
+import { SongInfo } from "../lib/songInfo";
+import type { MusicLibrary } from "../lib/MusicLibrary";
+import { watch } from "vue";
 
-const actualSong: Ref<string> = inject("actualSong", ref("There is no song"))
+const musicLibrary: MusicLibrary = inject("musicLibrary");
+
+const actualSong: Ref<string> = inject("actualSong", ref("There is no song"));
 
 const playSong = inject("playSong", async (songPath: string) => {
-  console.log(`executing playSong()`)
+  console.log(`executing playSong()`);
 
-  const songBuffer = await window.MusicManager.getSong(songPath)
+  const songBuffer = await window.MusicManager.getSong(songPath);
   if (songBuffer != undefined) {
-    const songBlob = new Blob([songBuffer])
-    actualSong.value = URL.createObjectURL(songBlob)
+    const songBlob = new Blob([songBuffer]);
+    actualSong.value = URL.createObjectURL(songBlob);
   }
-})
+});
 
 const songsLibrary: Ref<Map<string, SongInfo>> = inject(
   "songsLibrary",
-  ref(new Map()),
-)
+  ref(new Map())
+);
 
-const getURL = inject("getUrl", (data: string | undefined) => {
-  if (data != undefined) {
-    const frontCoverBlob = new Blob([base64ToUint8Array(data)], {
-      type: "image",
-    })
-    const frontCoverURL = URL.createObjectURL(frontCoverBlob)
-
-    return frontCoverURL
-  }
-})
+watch(musicLibrary.getSongsInfo(), (newVal) => {
+  console.log(`musicLibrary.getSongsInfo() has changed to ${newVal}`);
+});
 </script>
 
 <template>
-  <div class="view flex-direction:column gap:1rem max-h:80vh">
+  <div class="view flex-direction:column gap:1rem max-h:80vh max-w:80vw">
     <h1>Music</h1>
     <button @click="">Select song</button>
     <div
-      v-for="song in songsLibrary"
-      class="flex align-items::center max-h:5rem gap:1rem align-items:center f:medium place-content:space-between"
+      v-for="song in musicLibrary.getSongsInfo()"
+      class="songItem flex align-items::center max-h:5rem gap:1rem align-items:center f:medium place-content:space-between"
     >
       <img
-        v-if="getURL(song[1].frontCover) != undefined"
-        :src="getURL(song[1].frontCover)"
+        v-if="song[1].getFrontCoverURL() != undefined"
+        :src="song[1].getFrontCoverURL()"
         alt=""
         class="aspect:1/1 w:3rem r:5px"
       />
-      <p>{{ song[1].title }}</p>
-      <p>{{ song[1].artist }}</p>
-      <p>{{ song[1].album }}</p>
-      <p>{{ song[1].year }}</p>
-      <p>{{ song[1].genre }}</p>
-      <p>{{ song[1].duration }}</p>
+      <p>{{ song[1].getMetadata()?.title }}</p>
+      <p>{{ song[1].getMetadata()?.artist }}</p>
+      <p>{{ song[1].getMetadata()?.album }}</p>
+      <p>{{ song[1].getMetadata()?.year }}</p>
+      <p>{{ song[1].getMetadata()?.genre }}</p>
+      <p>{{ song[1].getMetadata()?.duration }}</p>
       <button @click="playSong(song[0])">Play Song</button>
     </div>
   </div>
@@ -60,5 +56,9 @@ const getURL = inject("getUrl", (data: string | undefined) => {
 <style>
 .view {
   overflow-y: scroll;
+}
+
+.songItem {
+  content-visibility: auto;
 }
 </style>

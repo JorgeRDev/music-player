@@ -1,22 +1,13 @@
-/* import { Dialog, IpcRenderer } from "electron"
-import { Dir } from "node:original-fs"
-import SongInfo from "lib/songInfo"
+declare type SongPath = string;
 
-declare global {
-  interface Window {
-    FileSystem: {
-      chooseDirectories: () => Promise<string[] | null>
-    }
-    MusicManager: {
-      getSongsInfoFromDirectories: (
-        dirs: string[],
-      ) => Promise<Map<string, SongInfo> | null>
-      getSongInfo: (songBuffer: Buffer) => Promise<SongInfo>
-      getSong: (songPath) => Promise<Buffer | undefined>
-    }
-    App: {
-      onFullScreen: (callback: (arg: boolean) => void) => void
-    }
-  }
+declare interface SongMetadata {
+  title: string | undefined;
+  frontCover: string | undefined;
+  year: number | undefined;
+  album: string | undefined;
+  artist: string | undefined;
+  albumArtist: string | undefined;
+  genre: string[] | undefined;
+  length: number | undefined;
+  itemType: string | undefined;
 }
- */

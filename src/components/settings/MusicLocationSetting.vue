@@ -1,54 +1,36 @@
 <script setup lang="ts">
-import { computed, inject, ref, Ref } from "vue"
+import { computed, inject, ref, Ref } from "vue";
+import type { MusicLibrary } from "../../lib/MusicLibrary";
 
-const musicLibraryPaths: Ref<string[]> = inject("musicLibraryPaths", ref([]))
-
-const addMusicLibraryPath = inject("addMusicLibraryPath", (dir: string) => {
-  if (dir) {
-    musicLibraryPaths.value.push(dir)
-  }
-})
-
-const removeMusicLibraryPath = inject(
-  "removeMusicLibraryPath",
-  (index: number) => {
-    musicLibraryPaths.value.splice(index, 1)
-  },
-)
-
-const musicLibraryPathsIsNotEmpty = computed(
-  () => musicLibraryPaths.value.length >= 1,
-)
-
-const songsLibrary: Ref<string[]> = inject("songsLibrary", ref([]))
-
-const updateSongs = inject("updateSongs", async () => {
-  const musicLibraryPathsValue: string[] = musicLibraryPaths.value.map(
-    (path) => path,
-  )
-
-  const songsLocated: string[] | null =
-    await window.MusicManager.getSongsInfoFromDirectories(
-      musicLibraryPathsValue,
-    )
-
-  if (songsLocated != undefined) {
-    songsLibrary.value = songsLocated
-  }
-  console.log(songsLibrary)
-})
+const musicLibrary: MusicLibrary = inject("musicLibrary") as MusicLibrary;
 
 const chooseDirectories = async () => {
+  console.log(`executing chooseDirectories()`);
+
+  console.log(`user is choosing directories`);
+
   const directories: string[] | null =
-    await window.FileSystem.chooseDirectories()
-  console.log(`selectDirectories() has received ${directories}`)
+    await window.FileSystem.chooseDirectories();
+
+  console.log(`chooseDirectories() has received ${directories}`);
 
   if (directories) {
-    for (const directory of directories) addMusicLibraryPath(directory)
+    console.log(`adding directories to musicLibrary`);
+    for (const directory of directories) {
+      console.log(`${directory} is being added`);
+      musicLibrary.addMusicLibraryPath(directory);
+      console.log(`${directory} has been added`);
+    }
+
+    console.log(
+      `musicLibraryPaths has ${musicLibrary.getMusicLibraryPaths().length} directories`
+    );
+    console.log(`musicLibraryPaths has ${musicLibrary.getMusicLibraryPaths()}`);
   }
 
-  updateSongs()
-}
+  await musicLibrary.createSongsPathFromPaths();
+  await musicLibrary.createSongsInfoFromPaths();
+};
 </script>
 
 <template>
@@ -56,18 +38,19 @@ const chooseDirectories = async () => {
     <div class="flex">
       <p>Music locations</p>
       <button @click="chooseDirectories()">Add folder</button>
-      <button v-if="musicLibraryPathsIsNotEmpty">Abrir</button>
     </div>
     <div class="flex flex-direction:column">
       <div
-        v-if="musicLibraryPathsIsNotEmpty"
-        v-for="(musicLibraryPath, index) in musicLibraryPaths.values()"
+        v-if="musicLibrary.getMusicLibraryPaths().length > 0"
+        v-for="(musicLibraryPath, index) in musicLibrary.getMusicLibraryPaths()"
         :key="index"
         class="b"
       >
         <p>{{ index }}</p>
         <p>{{ musicLibraryPath }}</p>
-        <button @click="removeMusicLibraryPath(index)">Remove Library</button>
+        <button @click="musicLibrary.removeMusicLibraryPath(index)">
+          Remove Library
+        </button>
       </div>
     </div>
   </div>
