@@ -4,87 +4,18 @@ import "node:path";
 import "node:fs";
 import TitleBar from "./components/TitleBar.vue";
 import PlayerComponent from "./components/PlayerComponent.vue";
-import type SongInfo from "../lib/songInfo";
-import { base64ToUint8Array } from "uint8array-extras";
 import Menu from "./components/MenuComponent.vue";
-
-const musicLibraryPaths: Ref<string[]> = ref([]);
-
-const isFullScreen: Ref<boolean | undefined> = ref(undefined);
-
-const actualSongURL: Ref<SongPath> = ref("");
-const actualSongInfo: Ref<SongInfo | null> = ref(null);
-const actualSongFrontCoverURL: Ref<SongPath> = ref("");
-
-const songsLibrary: Ref<Map<string, SongInfo>> = ref(new Map());
-const songsUrlLibrary: Ref<SongPath[]> = ref([]);
-
-const addMusicLibraryPath = (dir: string) => {
-  if (dir) {
-    musicLibraryPaths.value.push(dir);
-  }
-};
-const removeMusicLibraryPath = (index: number) => {
-  musicLibraryPaths.value.splice(index, 1);
-};
-
-const updateSongs = async () => {
-  console.log("executing updateSong()");
-
-  const musicLibraryPathsValue: string[] = musicLibraryPaths.value.map(
-    (path) => path
-  );
-
-  const songsLocated: Map<string, SongInfo> | null =
-    await window.MusicManager.getSongsInfoFromDirectories(
-      musicLibraryPathsValue
-    );
-
-  if (songsLocated != undefined) {
-    for (const song of songsLocated) {
-      console.log(song);
-      songsLibrary.value.set(song[0], song[1]);
-    }
-
-    console.log(songsLibrary);
-  }
-};
-
-const getURL = (data: string | undefined) => {
-  if (data != undefined) {
-    const frontCoverBlob = new Blob([base64ToUint8Array(data)], {
-      type: "image",
-    });
-    const frontCoverURL = URL.createObjectURL(frontCoverBlob);
-
-    return frontCoverURL;
-  }
-};
-
-const playSong = async (songPath: SongPath) => {
-  console.log(`executing playSong()`);
-
-  const songBuffer = await window.MusicManager.getSong(songPath);
-  if (songBuffer != undefined) {
-    const songBlob = new Blob([songBuffer]);
-    actualSongURL.value = URL.createObjectURL(songBlob);
-
-    actualSongInfo.value = await window.MusicManager.getSongInfo(songBuffer);
-  }
-
-  actualSongFrontCoverURL.value = getURL(actualSongInfo.value?.frontCover);
-
-  const styles = document.styleSheets[0];
-  if (styles != null) {
-    const url = `url(${actualSongFrontCoverURL.value})`;
-    console.log(`updating ${styles} with the value ${url}`);
-
-    styles.insertRule(
-      `:root { --player-background-img: ${url}; }`,
-      styles.cssRules.length
-    );
-  }
-};
+import {
+  actualSongURL,
+  actualSongInfo,
+  actualSongFrontCoverURL,
+  songsLibrary,
+  songsUrlLibrary,
+  updateSongs,
+  playSong,
+  actualSong,
+} from "./lib/musicPlayer";
+import { isFullScreen } from "./lib/fullscreen";
 
 const theme: Ref<"light" | "dark" | "system" | undefined> = inject(
   "theme",
@@ -99,9 +30,6 @@ watchEffect(() => {
   });
 });
 
-provide("addMusicLibraryPath", addMusicLibraryPath);
-provide("removeMusicLibraryPath", removeMusicLibraryPath);
-provide("musicLibraryPaths", readonly(musicLibraryPaths));
 provide("updateSongs", updateSongs);
 provide("playSong", playSong);
 provide("actualSongURL", actualSongURL);
@@ -128,7 +56,7 @@ provide("songsLibrary", songsLibrary);
             >
               <img
                 v-if="actualSongInfo != undefined"
-                :src="getURL(actualSongInfo.frontCover)"
+                :src="actualSong.getFrontCoverURL()"
                 alt=""
                 class="object-fit:cover aspect:1/1 r:2.3rem w:24rem shadow:2|2|120rem|15rem|rgba(131,131,131,0.082)"
               />
@@ -137,17 +65,17 @@ provide("songsLibrary", songsLibrary);
         </div>
         <div class="">
           <p
-            class="f:white f:medium f:26 text-shadow:0|0|10|rgba(218,218,218,0.432) border"
+            class="f:white f:medium f:26 text-shadow:0|0|30|rgba(255,255,255,0.3)"
           >
             {{ actualSongInfo?.title }}
           </p>
           <p
-            class="f:white f:medium f:22 text-shadow:0|0|10|rgba(214,214,214,0.568)"
+            class="f:white f:medium f:22 text-shadow:0|0|30|rgba(255,255,255,0.4)"
           >
             {{ actualSongInfo?.album }}
           </p>
           <p
-            class="f:white f:medium f:20 text-shadow:0|0|10|rgba(207,207,207,0.699)"
+            class="f:white f:medium f:20 text-shadow:0|0|30|rgba(255,255,255,0.5)"
           >
             {{ actualSongInfo?.artist }}
           </p>
@@ -165,13 +93,10 @@ provide("songsLibrary", songsLibrary);
     </div>
     <PlayerComponent />
   </main>
-  <audio :src="actualSongURL" class="" autoplay loop></audio>
+  <audio :src="actualSong.getURL()" class="" autoplay loop></audio>
 </template>
 
-<style>
-#app {
-}
-
+<style scoped>
 .fullscreen {
   width: 100%;
 
@@ -189,9 +114,8 @@ provide("songsLibrary", songsLibrary);
   left: 0;
   width: 100%;
   height: 100%;
-  /* Color de fondo del seudoelemento */
-  mix-blend-mode: multiply; /* Modo de mezcla para crear el efecto de transparencia */
-  backdrop-filter: blur(30px);
+  mix-blend-mode: multiply;
+  backdrop-filter: blur(35px);
 }
 
 .fullscreen-content {

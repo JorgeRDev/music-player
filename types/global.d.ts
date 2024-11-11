@@ -1,6 +1,6 @@
 declare type SongPath = string;
 
-declare interface SongInfo {
+declare interface SongMetadata {
   title: string | undefined;
   frontCover: string | undefined;
   year: number | undefined;

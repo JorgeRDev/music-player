@@ -30,5 +30,8 @@
     "vue-router": "^4.4.5",
     "vue-tsc": "^2.1.8"
   },
-  "main": "dist-electron/main.js"
+  "main": "dist-electron/main.js",
+  "dependencies": {
+    "howler": "^2.2.4"
+  }
 }
