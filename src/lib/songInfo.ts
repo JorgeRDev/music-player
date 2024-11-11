@@ -1,14 +1,29 @@
 import { base64ToUint8Array, uint8ArrayToBase64 } from "uint8array-extras";
 
 class SongInfo {
+  songPath: SongPath;
   private buffer: Buffer | undefined;
   private blob: Blob | undefined;
   private url: string | undefined;
   private songMetadata: SongMetadata | undefined;
   private frontCoverURL: string | undefined;
+  private frontCoverBlob: Blob | undefined;
+  constructor(songPath: SongPath) {
+    console.log(`SongInfo() has been created with ${songPath}`);
 
-  setBuffer(buffer: Buffer) {
-    this.buffer = buffer;
+    this.songPath = songPath;
+  }
+
+  async setBuffer() {
+    const _buffer: Buffer | undefined = await window.MusicManager.getSong(
+      this.songPath
+    );
+
+    if (_buffer != undefined) {
+      this.buffer = _buffer;
+    } else {
+      throw new Error("Buffer is undefined");
+    }
   }
 
   setBlob(blob: Blob) {
@@ -58,7 +73,10 @@ class SongInfo {
   createFrontCoverURL() {
     if (this.songMetadata != undefined) {
       if (this.songMetadata.frontCover != undefined) {
-        this.frontCoverURL = URL.createObjectURL(this.songMetadata.frontCover);
+        this.frontCoverBlob = new Blob([
+          base64ToUint8Array(this.songMetadata.frontCover),
+        ]);
+        this.frontCoverURL = URL.createObjectURL(this.frontCoverBlob);
       } else {
         throw new Error("Front cover is undefined");
       }

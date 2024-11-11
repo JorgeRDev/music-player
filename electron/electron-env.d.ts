@@ -30,9 +30,10 @@ declare global {
       chooseDirectories: () => Promise<string[] | null>;
     };
     MusicManager: {
-      getSongsInfoFromDirectories: (
-        dirs: string[]
-      ) => Promise<Map<string, SongInfo> | null>;
+      getSongsPathFromDirectories: (
+        directories: string[],
+        onSongPath: (songPath: string) => void
+      ) => void;
       getSongInfo: (songBuffer: Buffer) => Promise<SongInfo>;
       getSong: (songPath) => Promise<Buffer | undefined>;
     };

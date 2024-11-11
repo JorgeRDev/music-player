@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ThemeSetting from "../components/Settings/ThemeSetting.vue"
-import MusicLocationSetting from "../components/Settings/MusicLocationSetting.vue"
+import ThemeSetting from "../components/Settings/ThemeSetting.vue";
+import MusicLocationSetting from "../components/Settings/MusicLocationSetting.vue";
 </script>
 
 <template>

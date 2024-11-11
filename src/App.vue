@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { inject, provide, readonly, ref, Ref, watchEffect } from "vue";
+import {
+  inject,
+  onBeforeUnmount,
+  onUnmounted,
+  provide,
+  readonly,
+  ref,
+  Ref,
+  watchEffect,
+} from "vue";
 import "node:path";
 import "node:fs";
 import TitleBar from "./components/TitleBar.vue";
 import PlayerComponent from "./components/PlayerComponent.vue";
 import Menu from "./components/MenuComponent.vue";
-import {
-  actualSongURL,
-  actualSongInfo,
-  actualSongFrontCoverURL,
-  songsLibrary,
-  songsUrlLibrary,
-  updateSongs,
-  playSong,
-  actualSong,
-} from "./lib/musicPlayer";
+import { playSong, actualSong, musicLibrary } from "./lib/musicPlayer";
 import { isFullScreen } from "./lib/fullscreen";
 
 const theme: Ref<"light" | "dark" | "system" | undefined> = inject(
@@ -30,16 +30,12 @@ watchEffect(() => {
   });
 });
 
-provide("updateSongs", updateSongs);
+onBeforeUnmount(() => {
+  musicLibrary.clearAll();
+});
+provide("musicLibrary", musicLibrary);
 provide("playSong", playSong);
-provide("actualSongURL", actualSongURL);
-provide("actualSongInfo", actualSongInfo);
-provide("actualSongFrontCoverURL", actualSongFrontCoverURL);
 provide("isFullScreen", isFullScreen);
-
-/* WARNING: This maybe doesn't be used */
-provide("songsLibraryURL", songsUrlLibrary);
-provide("songsLibrary", songsLibrary);
 </script>
 
 <template>
@@ -55,7 +51,7 @@ provide("songsLibrary", songsLibrary);
               class="aspect:1/1 overflow:hidden r:2.8rem w:24rem max-w:24rem flex place-content:center align-items:center"
             >
               <img
-                v-if="actualSongInfo != undefined"
+                v-if="actualSong != undefined"
                 :src="actualSong.getFrontCoverURL()"
                 alt=""
                 class="object-fit:cover aspect:1/1 r:2.3rem w:24rem shadow:2|2|120rem|15rem|rgba(131,131,131,0.082)"
@@ -67,17 +63,17 @@ provide("songsLibrary", songsLibrary);
           <p
             class="f:white f:medium f:26 text-shadow:0|0|30|rgba(255,255,255,0.3)"
           >
-            {{ actualSongInfo?.title }}
+            {{ actualSong?.getMetadata()?.title }}
           </p>
           <p
             class="f:white f:medium f:22 text-shadow:0|0|30|rgba(255,255,255,0.4)"
           >
-            {{ actualSongInfo?.album }}
+            {{ actualSong?.getMetadata()?.album }}
           </p>
           <p
             class="f:white f:medium f:20 text-shadow:0|0|30|rgba(255,255,255,0.5)"
           >
-            {{ actualSongInfo?.artist }}
+            {{ actualSong?.getMetadata()?.artist }}
           </p>
         </div>
       </div>
@@ -93,7 +89,13 @@ provide("songsLibrary", songsLibrary);
     </div>
     <PlayerComponent />
   </main>
-  <audio :src="actualSong.getURL()" class="" autoplay loop></audio>
+  <audio
+    v-if="actualSong != undefined"
+    :src="actualSong.getURL()"
+    class=""
+    autoplay
+    loop
+  ></audio>
 </template>
 
 <style scoped>

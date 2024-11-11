@@ -1,7 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import SongInfo from "lib/songInfo";
-
-const validChannels = ["songs"];
+import { SongInfo } from "../src/lib/songInfo";
 
 contextBridge.exposeInMainWorld("FileSystem", {
   chooseDirectories: async (): Promise<string[] | null> =>
@@ -9,10 +7,19 @@ contextBridge.exposeInMainWorld("FileSystem", {
 });
 
 contextBridge.exposeInMainWorld("MusicManager", {
-  getSongsInfoFromDirectories: async (
-    dirs: string[]
-  ): Promise<Map<string, SongInfo>> =>
-    ipcRenderer.invoke("getSongsInfoFromDirectories", dirs),
+  getSongsPathFromDirectories: (
+    directories: string[],
+    onSongPath: (songPath: string) => void
+  ) => {
+    console.log(`executing getSongsPathFromDirectories(${directories})`);
+    ipcRenderer.send("getSongsPathFromDirectories", directories);
+
+    ipcRenderer.on("getSongsPathFromDirectories-reply", (_event, songPath) => {
+      console.log(`getSongsPathFromDirectories-reply has recieved ${songPath}`);
+
+      onSongPath(songPath);
+    });
+  },
   getSong: async (songPath: string): Promise<Buffer | undefined> => {
     console.log(`executing getSong(${songPath})`);
 
