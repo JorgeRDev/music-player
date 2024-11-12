@@ -66,6 +66,7 @@ class MusicLibrary {
       _songInfo.createURLFromBlob();
       await _songInfo.createMetadataFromBuffer();
       _songInfo.createFrontCoverURL();
+      _songInfo.clearBlobAndBuffer();
       this.songsInfo.value.set(songPath, _songInfo);
     }
   }

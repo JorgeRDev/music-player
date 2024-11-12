@@ -1,5 +1,5 @@
 import { ref, Ref } from "vue";
-import { MusicLibrary } from "./MusicLibrary";
+import { MusicLibrary } from "./musicLibrary";
 import { SongInfo } from "./songInfo";
 
 const actualSong: Ref<SongInfo | undefined> = ref(undefined);

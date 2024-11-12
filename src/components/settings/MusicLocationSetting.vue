@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, ref, Ref } from "vue";
-import type { MusicLibrary } from "../../lib/MusicLibrary";
+import type { MusicLibrary } from "../../lib/musicLibrary";
 
 const musicLibrary: MusicLibrary = inject("musicLibrary") as MusicLibrary;
 

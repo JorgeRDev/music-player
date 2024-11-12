@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { inject, ref, Ref } from "vue";
-import { SongInfo } from "../lib/songInfo";
-import type { MusicLibrary } from "../lib/MusicLibrary";
-import { watch } from "vue";
+import { inject, ref, Ref } from "vue"
+import { SongInfo } from "../lib/songInfo"
+import type { MusicLibrary } from "../lib/musicLibrary"
+import { watch } from "vue"
 
-const musicLibrary: MusicLibrary = inject("musicLibrary");
+const musicLibrary: MusicLibrary = inject("musicLibrary")
 
-const actualSong: Ref<string> = inject("actualSong", ref("There is no song"));
+const actualSong: Ref<string> = inject("actualSong", ref("There is no song"))
 
 const playSong = inject("playSong", async (songPath: string) => {
-  console.log(`executing playSong()`);
+  console.log(`executing playSong()`)
 
-  const songBuffer = await window.MusicManager.getSong(songPath);
+  const songBuffer = await window.MusicManager.getSong(songPath)
   if (songBuffer != undefined) {
-    const songBlob = new Blob([songBuffer]);
-    actualSong.value = URL.createObjectURL(songBlob);
+    const songBlob = new Blob([songBuffer])
+    actualSong.value = URL.createObjectURL(songBlob)
   }
-});
+})
 
 const songsLibrary: Ref<Map<string, SongInfo>> = inject(
   "songsLibrary",
-  ref(new Map())
-);
+  ref(new Map()),
+)
 
 watch(musicLibrary.getSongsInfo(), (newVal) => {
-  console.log(`musicLibrary.getSongsInfo() has changed to ${newVal}`);
-});
+  console.log(`musicLibrary.getSongsInfo() has changed to ${newVal}`)
+})
 </script>
 
 <template>
