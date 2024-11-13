@@ -1,5 +1,8 @@
 import { ref, Ref } from "vue"
 import { SongInfo } from "./songInfo"
+import pino, { Logger } from "pino"
+
+const logger: Logger<never, boolean> = pino()
 
 class MusicLibrary {
   musicLibraryPaths: Ref<string[]> = ref([
@@ -9,7 +12,7 @@ class MusicLibrary {
   songsInfo: Ref<Map<SongPath, SongInfo>> = ref(new Map())
 
   constructor() {
-    console.log("MusicLibrary() has been created")
+    logger.info("MusicLibrary() has been created")
   }
 
   removeMusicLibraryPath(index: number) {
@@ -53,15 +56,13 @@ class MusicLibrary {
     }
   }
 
-  async createSongsInfoFromPaths() {
-    console.log(`executing createSongsInfoFromPaths()`)
+  async createSongsMetadataFromPaths() {
+    console.log(`executing createSongsMetadataFromPaths()`)
 
     for (const songPath of this.songsPath.value) {
       console.log(`getting songInfo from ${songPath}`)
       const _songInfo: SongInfo = new SongInfo(songPath)
-      await _songInfo.createMetadataFromBuffer()
-      _songInfo.createFrontCoverURL()
-      _songInfo.clearBlobAndBuffer()
+      await _songInfo.init()
       this.songsInfo.value.set(songPath, _songInfo)
     }
   }

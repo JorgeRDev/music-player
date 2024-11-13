@@ -8,15 +8,10 @@ const musicLibrary: MusicLibrary = inject("musicLibrary")
 
 const actualSong: Ref<string> = inject("actualSong", ref("There is no song"))
 
-const playSong = inject("playSong", async (songPath: string) => {
-  console.log(`executing playSong()`)
-
-  const songBuffer = await window.MusicManager.getSong(songPath)
-  if (songBuffer != undefined) {
-    const songBlob = new Blob([songBuffer])
-    actualSong.value = URL.createObjectURL(songBlob)
-  }
-})
+const loadAndPlaySong = inject(
+  "loadAndPlaySong",
+  async (songPath: string) => {},
+)
 
 const songsLibrary: Ref<Map<string, SongInfo>> = inject(
   "songsLibrary",
@@ -48,7 +43,7 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
       <p>{{ song[1].getMetadata()?.year }}</p>
       <p>{{ song[1].getMetadata()?.genre }}</p>
       <p>{{ song[1].getMetadata()?.duration }}</p>
-      <button @click="playSong(song[0])">Play Song</button>
+      <button @click="loadAndPlaySong(song[0])">Play Song</button>
     </div>
   </div>
 </template>

@@ -1,62 +1,27 @@
 import { ref, Ref } from "vue"
 import { MusicLibrary } from "./musicLibrary"
 import { SongInfo } from "./songInfo"
+import { inject } from "vue"
+import pino, { Logger } from "pino"
+import ActualSong from "./actualSong"
 
-const actualSong: Ref<SongInfo | undefined> = ref(undefined)
+const logger: Logger<never, boolean> = pino()
+
+const actualSong: Ref<ActualSong> = ref(new ActualSong())
+
 const musicLibrary: MusicLibrary = new MusicLibrary()
+
 const musicQueue: Ref<SongPath[]> = ref([])
 
-async function initMusicLibrary() {
-  console.log(`Executing createSongsPathFromPaths()`)
-  await musicLibrary.createSongsPathFromPaths()
-  await musicLibrary.createSongsInfoFromPaths()
-}
+/**
+ * Vue function
+ * @param songPath - The path of the song to play
+ */
+async function loadAndPlaySong(songPath: SongPath) {
+  logger.info(`executing loadAndPlaySong(${songPath})`)
 
-await initMusicLibrary()
-/* async function updateSongs() {
-  console.log("executing updateSong()");
-
-  const musicLibraryPathsValue: string[] = musicLibrary
-    .getMusicLibraryPaths()
-    .map((path) => path);
-
-  const songsLocated: Map<string, SongInfo> | null =
-    await window.MusicManager.getSongsInfoFromDirectories(
-      musicLibraryPathsValue
-    );
-
-  if (songsLocated != undefined) {
-    for (const song of songsLocated) {
-      console.log(song);
-      songsLibrary.value.set(song[0], song[1]);
-    }
-
-    console.log(songsLibrary);
-  }
-} */
-
-async function playSong(songPath: SongPath) {
-  console.log(`playing ${songPath}`)
-
-  if (actualSong.value != undefined) {
-    actualSong.value.clearAll()
-  }
-
-  actualSong.value = new SongInfo(songPath)
-  const songBuffer: Buffer | undefined =
-    await window.MusicManager.getSong(songPath)
-
-  if (songBuffer != undefined) {
-    await actualSong.value.setBuffer()
-    actualSong.value.createBlobFromBuffer()
-    actualSong.value.createURLFromBlob()
-    await actualSong.value.createMetadataFromBuffer()
-    actualSong.value.createFrontCoverURL()
-  } else {
-    throw new Error("Song buffer is undefined")
-  }
-
-  actualSong.value.createFrontCoverURL()
+  await actualSong.value.loadSong(songPath)
+  await actualSong.value.play()
 
   const styles = document.styleSheets[0]
   if (styles != null) {
@@ -70,4 +35,4 @@ async function playSong(songPath: SongPath) {
   }
 }
 
-export { actualSong, musicLibrary, playSong }
+export { actualSong, musicLibrary, loadAndPlaySong }

@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron"
 import { SongInfo } from "../src/lib/songInfo"
+import pino, { Logger } from "pino"
 
 contextBridge.exposeInMainWorld("FileSystem", {
   chooseDirectories: async (): Promise<string[] | null> =>
@@ -20,13 +21,20 @@ contextBridge.exposeInMainWorld("MusicManager", {
       onSongPath(songPath)
     })
   },
-  getSong: async (songPath: string): Promise<Buffer | undefined> => {
-    console.log(`executing getSong(${songPath})`)
+  getSongBuffer: async (
+    songPath: SongPath | undefined,
+  ): Promise<Buffer | undefined> => {
+    console.log(`executing getSongBuffer(${songPath})`)
+    if (songPath == undefined) {
+      throw new Error("Song path is undefined")
+    }
 
-    return ipcRenderer.invoke("getSong", songPath)
+    return ipcRenderer.invoke("getSongBuffer", songPath)
   },
-  getSongInfo: async (songPath: SongPath): Promise<SongInfo | null> =>
-    ipcRenderer.invoke("getSongInfo", songPath),
+  getSongMetadata: async (songPath: SongPath): Promise<SongInfo | null> => {
+    console.info(`executing getSongMetadata(${songPath}) from preload`)
+    return ipcRenderer.invoke("getSongMetadata", songPath)
+  },
 })
 
 contextBridge.exposeInMainWorld("App", {

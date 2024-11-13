@@ -34,8 +34,10 @@ declare global {
         directories: string[],
         onSongPath: (songPath: string) => void,
       ) => void
-      getSongInfo: (songPath: SongPath) => Promise<SongInfo>
-      getSong: (songPath) => Promise<Buffer | undefined>
+      getSongMetadata: (songPath: SongPath) => Promise<SongInfo | null>
+      getSongBuffer: (
+        songPath: SongPath | undefined,
+      ) => Promise<Buffer | undefined>
     }
     App: {
       onFullScreen: (callback: (arg: boolean) => void) => void

@@ -1,21 +1,25 @@
 {
   "name": "music-player",
   "private": false,
-  "version": "0.1.2",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite | pino-pretty",
     "build": "vite build && electron-builder",
     "preview": "vite preview"
   },
   "devDependencies": {
     "@master/css": "^1.37.8",
+    "@types/howler": "^2.2.12",
     "@vitejs/plugin-vue": "^5.1.4",
     "electron": "^33.0.2",
     "electron-builder": "^25.1.8",
     "eslint": "^9.13.0",
     "eslint-plugin-vue": "^9.30.0",
+    "howler": "^2.2.4",
     "music-metadata": "^10.5.1",
+    "pino": "^9.5.0",
+    "pino-pretty": "^13.0.0",
     "prettier": "^3.3.3",
     "stylelint": "^16.10.0",
     "stylelint-config-idiomatic-order": "^10.0.0",
@@ -30,8 +34,5 @@
     "vue-router": "^4.4.5",
     "vue-tsc": "^2.1.8"
   },
-  "main": "dist-electron/main.js",
-  "dependencies": {
-    "howler": "^2.2.4"
-  }
+  "main": "dist-electron/main.js"
 }
