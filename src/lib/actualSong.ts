@@ -9,6 +9,23 @@ export default class actualSong extends Song {
   song: Howl | undefined
   actualDuration: number | undefined
 
+  getActualDuration(): number | undefined {
+    if (this.song === undefined) {
+      return undefined
+    }
+
+    return this.song.seek()
+  }
+
+  setActualDuration(duration: number) {
+    if (this.song === undefined) {
+      return
+    }
+
+    this.song.seek(duration)
+    this.actualDuration = duration
+  }
+
   async loadSong(songPath: SongPath) {
     logger.info(`loading song ${songPath}`)
     this.disposeAll()
@@ -39,6 +56,7 @@ export default class actualSong extends Song {
       onplay: () => {
         setInterval(() => {
           this.actualDuration = this.song?.seek()
+          console.log(this.actualDuration)
         }, 1000)
       },
     })

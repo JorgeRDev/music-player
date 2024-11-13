@@ -8,7 +8,7 @@ declare interface SongMetadata {
   artist: string | undefined
   albumArtist: string | undefined
   genre: string[] | undefined
-  length: number | undefined
+  duration: number | undefined
   itemType: string | undefined
   format: string | undefined
 }

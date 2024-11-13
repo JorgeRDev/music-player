@@ -8,16 +8,57 @@ const actualSong: Ref<ActualSong | undefined> = inject(
   ref(new ActualSong()),
 )
 
+const actualDuration: Ref<number> = computed(
+  () => actualSong.value?.actualDuration ?? 0,
+)
+
 const isFullScreen: Ref<boolean | undefined> = inject(
   "isFullScreen",
   ref(undefined),
+)
+
+const actualDurationComputed = computed(() =>
+  actualSong.value?.getActualDuration(),
+)
+
+function formatTime(seconds: number): string {
+  if (!seconds) return "00:00:00"
+
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainingSeconds = Math.floor(seconds % 60)
+
+  if (hours > 0) {
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`
+  }
+
+  return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`
+}
+
+const songDurationFormatted = computed(() =>
+  formatTime(actualSong.value?.getMetadata()?.duration ?? 0),
+)
+
+const actualDurationFormatted = computed(() =>
+  formatTime(actualDuration.value ?? 0),
 )
 </script>
 
 <template>
   <div v-if="!isFullScreen" id="player" class="player">
     <div class="player-content">
-      <p>{{ actualSong?.actualDuration }}</p>
+      <p>{{ actualDurationFormatted }}</p>
+      <input
+        class="ml:3rem"
+        type="range"
+        min="0"
+        :max="actualSong?.getMetadata()?.duration"
+        v-model="actualDuration"
+        @input="
+          (event) => actualSong?.setActualDuration(Number(event.target.value))
+        "
+      />
+      <p>{{ songDurationFormatted }}</p>
       <div class="pl:2rem pr:1rem">
         <img
           :src="actualSong?.getFrontCoverURL()"
