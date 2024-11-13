@@ -35,7 +35,9 @@ declare global {
         onSongPath: (songPath: string) => void,
       ) => void
       getSongMetadata: (songPath: SongPath) => Promise<SongInfo | null>
-      getSong: (songPath) => Promise<Buffer | undefined>
+      getSongBuffer: (
+        songPath: SongPath | undefined,
+      ) => Promise<Buffer | undefined>
     }
     App: {
       onFullScreen: (callback: (arg: boolean) => void) => void

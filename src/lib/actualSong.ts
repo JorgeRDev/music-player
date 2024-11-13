@@ -1,57 +1,66 @@
 import { SongInfo } from "./songInfo"
 import { Howl } from "howler"
 import pino, { Logger } from "pino"
+import Song from "./song"
 
 const logger: Logger<never, boolean> = pino()
 
-export default class actualSong extends SongInfo {
-  songPath: SongPath | undefined = undefined
+export default class actualSong extends Song {
   song: Howl | undefined
 
   async loadSong(songPath: SongPath) {
     logger.info(`loading song ${songPath}`)
-    this.clearAll()
+    this.disposeAll()
 
     logger.trace(`setting songPath to ${songPath}`)
     this.songPath = songPath
     logger.trace(`setting buffer`)
-    await this.setBuffer()
+    await this.createBuffer()
     logger.trace(`creating blob from buffer`)
     this.createBlobFromBuffer()
     logger.trace(`creating url from blob`)
     this.createURLFromBlob()
 
-    if (this.url != undefined) {
-      logger.trace(`creating howl with ${this.url}`)
-      this.song = new Howl({
-        src: [this.url],
-        html5: true,
-      })
+    if (this.url === undefined) {
+      throw new Error(
+        "URL is undefined. Try calling createURLFromBlob() first before loading the song",
+      )
     }
 
+    logger.trace(`creating howl with ${this.url}`)
+    this.song = new Howl({
+      src: [this.url],
+      html5: true,
+    })
+
     logger.trace(`creating metadata from buffer`)
-    await this.createMetadataFromBuffer()
+    await this.getMetadataFromSongPath()
     logger.trace(`creating front cover url`)
-    this.createFrontCoverURL()
+    this.getFrontCoverURL()
   }
 
-  clearAll(): void {
-    logger.info(`clearing all`)
-    this.clearBlobAndBuffer()
+  disposeAll(): void {
+    logger.info(`executing disposeAll()`)
+    logger.trace(`disposing blob and buffer`)
 
-    if (this.url) {
-      URL.revokeObjectURL(this.url)
-      this.url = undefined
+    this.disposeBlobAndBuffer()
+
+    if (this.songMetadata) {
+      this.songMetadata = undefined
     }
 
     if (this.frontCoverURL) {
       URL.revokeObjectURL(this.frontCoverURL)
       this.frontCoverURL = undefined
+    }
+
+    if (this.frontCoverBlob) {
       this.frontCoverBlob = undefined
     }
 
-    this.songMetadata = undefined
-    this.song?.unload()
-    this.song = undefined
+    if (this.song) {
+      this.song.unload()
+      this.song = undefined
+    }
   }
 }

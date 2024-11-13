@@ -93,7 +93,7 @@ ipcMain.on(
 )
 
 ipcMain.handle(
-  "getSong",
+  "getSongBuffer",
   async (event, songPath: string): Promise<Buffer | undefined> => {
     logger.info(`executing getSong(${songPath}) handler`)
 
