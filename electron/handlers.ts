@@ -214,6 +214,7 @@ ipcMain.handle(
     if (songMetadata != undefined) {
       console.log(`songMetadata is not undefined`)
       const _songMetadata: SongMetadata = new SongMetadata()
+      _songMetadata.title = songMetadata.common.title
       _songMetadata.album = songMetadata.common.album
       if (songMetadata.common.picture != undefined) {
         _songMetadata.frontCover = uint8ArrayToBase64(

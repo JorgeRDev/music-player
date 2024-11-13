@@ -5,14 +5,6 @@ import { SongInfo } from "./songInfo"
 const actualSong: Ref<SongInfo | undefined> = ref(undefined)
 const musicLibrary: MusicLibrary = new MusicLibrary()
 const musicQueue: Ref<SongPath[]> = ref([])
-
-async function initMusicLibrary() {
-  console.log(`Executing createSongsPathFromPaths()`)
-  await musicLibrary.createSongsPathFromPaths()
-  await musicLibrary.createSongsInfoFromPaths()
-}
-
-await initMusicLibrary()
 /* async function updateSongs() {
   console.log("executing updateSong()");
 
