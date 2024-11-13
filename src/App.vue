@@ -14,7 +14,7 @@ import "node:fs"
 import TitleBar from "./components/TitleBar.vue"
 import PlayerComponent from "./components/PlayerComponent.vue"
 import Menu from "./components/MenuComponent.vue"
-import { playSong, actualSong, musicLibrary } from "./lib/musicPlayer"
+import { loadAndPlaySong, actualSong, musicLibrary } from "./lib/musicPlayer"
 import { isFullScreen } from "./lib/fullscreen"
 import pino, { Logger } from "pino"
 
@@ -46,7 +46,7 @@ onBeforeUnmount(() => {
 })
 
 provide("musicLibrary", musicLibrary)
-provide("playSong", playSong)
+provide("loadAndPlaySong", loadAndPlaySong)
 provide("isFullScreen", isFullScreen)
 </script>
 

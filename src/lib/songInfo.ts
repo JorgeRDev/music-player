@@ -4,11 +4,13 @@ class SongInfo extends Song {
   constructor(songPath: SongPath) {
     console.log(`SongInfo() has been created with ${songPath}`)
     super()
-
     this.songPath = songPath
+  }
 
-    this.getMetadataFromSongPath()
-    this.createFrontCoverBlob()
+  async init() {
+    await this.getMetadataFromSongPath()
+    await this.createFrontCoverBlob()
+    await this.createFrontCoverURL()
   }
 }
 

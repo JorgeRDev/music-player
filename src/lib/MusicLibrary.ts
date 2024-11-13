@@ -62,9 +62,7 @@ class MusicLibrary {
     for (const songPath of this.songsPath.value) {
       console.log(`getting songInfo from ${songPath}`)
       const _songInfo: SongInfo = new SongInfo(songPath)
-      await _songInfo.createMetadataFromBuffer()
-      _songInfo.createFrontCoverURL()
-      _songInfo.clearBlobAndBuffer()
+      await _songInfo.init()
       this.songsInfo.value.set(songPath, _songInfo)
     }
   }

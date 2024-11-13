@@ -39,6 +39,18 @@ export default class actualSong extends Song {
     this.getFrontCoverURL()
   }
 
+  async play() {
+    if (this.song === undefined) {
+      throw new Error("Song is undefined. Try calling loadSong() first")
+    }
+
+    try {
+      this.song.play()
+    } catch (error) {
+      logger.error(`error playing song: ${error}`)
+    }
+  }
+
   disposeAll(): void {
     logger.info(`executing disposeAll()`)
     logger.trace(`disposing blob and buffer`)

@@ -86,7 +86,7 @@ export default class Song {
     this.songMetadata = await window.MusicManager.getSongMetadata(this.songPath)
   }
 
-  createFrontCoverBlob() {
+  async createFrontCoverBlob() {
     logger.info(`executing createFrontCoverBlob()`)
     logger.trace(`creating front cover blob`)
 
@@ -105,6 +105,19 @@ export default class Song {
     this.frontCoverBlob = new Blob([
       base64ToUint8Array(this.songMetadata.frontCover),
     ])
+  }
+
+  async createFrontCoverURL() {
+    logger.info(`executing createFrontCoverURL()`)
+    logger.trace(`creating front cover url`)
+
+    if (this.frontCoverBlob === undefined) {
+      throw new Error(
+        "Front cover blob is undefined. Try calling createFrontCoverBlob() first before creating a front cover url",
+      )
+    }
+
+    this.frontCoverURL = URL.createObjectURL(this.frontCoverBlob)
   }
 
   getURL() {
