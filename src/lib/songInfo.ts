@@ -63,10 +63,11 @@ class SongInfo {
   }
 
   async createMetadataFromBuffer() {
-    if (this.buffer != undefined) {
-      this.songMetadata = await window.MusicManager.getSongInfo(this.buffer)
+    console.log(`executing createMetadataFromBuffer()`)
+    if (this.songPath != undefined) {
+      this.songMetadata = await window.MusicManager.getSongInfo(this.songPath)
     } else {
-      throw new Error("Buffer is undefined")
+      throw new Error("Song path is undefined")
     }
   }
 

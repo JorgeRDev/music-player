@@ -1,6 +1,6 @@
 /// <reference types="vite-plugin-electron/electron-env" />
 
-import type SongInfo from "../src/lib/songInfo";
+import type SongInfo from "../src/lib/songInfo"
 
 declare namespace NodeJS {
   interface ProcessEnv {
@@ -17,9 +17,9 @@ declare namespace NodeJS {
      * │
      * ```
      */
-    APP_ROOT: string;
+    APP_ROOT: string
     /** /dist/ or /public/ */
-    VITE_PUBLIC: string;
+    VITE_PUBLIC: string
   }
 }
 
@@ -27,18 +27,18 @@ declare namespace NodeJS {
 declare global {
   interface Window {
     FileSystem: {
-      chooseDirectories: () => Promise<string[] | null>;
-    };
+      chooseDirectories: () => Promise<string[] | null>
+    }
     MusicManager: {
       getSongsPathFromDirectories: (
         directories: string[],
-        onSongPath: (songPath: string) => void
-      ) => void;
-      getSongInfo: (songBuffer: Buffer) => Promise<SongInfo>;
-      getSong: (songPath) => Promise<Buffer | undefined>;
-    };
+        onSongPath: (songPath: string) => void,
+      ) => void
+      getSongInfo: (songPath: SongPath) => Promise<SongInfo>
+      getSong: (songPath) => Promise<Buffer | undefined>
+    }
     App: {
-      onFullScreen: (callback: (arg: boolean) => void) => void;
-    };
+      onFullScreen: (callback: (arg: boolean) => void) => void
+    }
   }
 }
