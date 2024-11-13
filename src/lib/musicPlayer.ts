@@ -1,10 +1,23 @@
 import { ref, Ref } from "vue"
 import { MusicLibrary } from "./musicLibrary"
 import { SongInfo } from "./songInfo"
+import { inject } from "vue"
+import pino, { Logger } from "pino"
 
+const logger: Logger<never, boolean> = pino()
+logger.trace("musicPlayer.ts has been loaded")
+logger.trace("creating actualSong")
+logger.info("creating actualSong")
 const actualSong: Ref<SongInfo | undefined> = ref(undefined)
+
+logger.info("creating musicLibrary")
 const musicLibrary: MusicLibrary = new MusicLibrary()
+
+logger.info("creating musicQueue")
 const musicQueue: Ref<SongPath[]> = ref([])
+
+const child = logger.child({ a: "property" })
+child.info("executing updateSongs()")
 /* async function updateSongs() {
   console.log("executing updateSong()");
 

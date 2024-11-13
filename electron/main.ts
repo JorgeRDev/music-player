@@ -1,23 +1,26 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import pino from "pino"
+import { app, BrowserWindow, ipcMain } from "electron"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 
-import "./handlers.ts";
+const logger = pino()
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import "./handlers.ts"
 
-process.env.APP_ROOT = path.join(__dirname, "..");
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+process.env.APP_ROOT = path.join(__dirname, "..")
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
-export const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
-export const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
+export const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"]
+export const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron")
+export const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist")
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, "public")
-  : RENDERER_DIST;
+  : RENDERER_DIST
 
-let win: BrowserWindow | null;
+let win: BrowserWindow | null
 
 function createWindow() {
   win = new BrowserWindow({
@@ -33,57 +36,57 @@ function createWindow() {
       devTools: true,
       preload: path.join(__dirname, "./preload.mjs"),
     },
-  });
+  })
 
-  win.setBackgroundMaterial("mica");
+  win.setBackgroundMaterial("mica")
   // Test active push message to Renderer-process.
 
   win.on("enter-full-screen", () => {
-    console.log(`App is on fullscreen`);
+    console.log(`App is on fullscreen`)
 
-    const channel = "is-app-full-screen";
-    const isFullScreen = true;
+    const channel = "is-app-full-screen"
+    const isFullScreen = true
 
     console.log(
-      `Sending the message isFullscreen: ${isFullScreen} through the channel ${channel}`
-    );
+      `Sending the message isFullscreen: ${isFullScreen} through the channel ${channel}`,
+    )
 
-    const eventHasListeners = win?.webContents.send(channel, isFullScreen);
+    const eventHasListeners = win?.webContents.send(channel, isFullScreen)
 
     if (eventHasListeners) {
-      console.log(`The ${channel} event has listeners`);
+      console.log(`The ${channel} event has listeners`)
     } else {
-      console.log(`The ${channel} event has no listeners`);
+      console.log(`The ${channel} event has no listeners`)
     }
-  });
+  })
 
   win.on("leave-full-screen", () => {
-    console.log(`App is not on fullscreen`);
+    console.log(`App is not on fullscreen`)
 
-    const channel = "is-app-full-screen";
-    const isFullScreen = false;
+    const channel = "is-app-full-screen"
+    const isFullScreen = false
 
     console.log(
-      `Sending the message isFullscreen: ${isFullScreen} through the channel ${channel}`
-    );
+      `Sending the message isFullscreen: ${isFullScreen} through the channel ${channel}`,
+    )
 
-    const eventHasListeners = win?.webContents.send(channel, isFullScreen);
+    const eventHasListeners = win?.webContents.send(channel, isFullScreen)
 
     if (eventHasListeners) {
-      console.log(`The ${channel} event has listeners`);
+      console.log(`The ${channel} event has listeners`)
     } else {
-      console.log(`The ${channel} event has no listeners`);
+      console.log(`The ${channel} event has no listeners`)
     }
-  });
+  })
 
   win.on("ready-to-show", () => {
-    win?.webContents.setZoomFactor(1);
-  });
+    win?.webContents.setZoomFactor(1)
+  })
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL);
+    win.loadURL(VITE_DEV_SERVER_URL)
   } else {
     // win.loadFile('dist/index.html')
-    win.loadFile(path.join(RENDERER_DIST, "index.html"));
+    win.loadFile(path.join(RENDERER_DIST, "index.html"))
   }
 }
 
@@ -92,19 +95,19 @@ function createWindow() {
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    app.quit();
-    win = null;
+    app.quit()
+    win = null
   }
-});
+})
 
 app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    createWindow()
   }
-});
+})
 
-app.on;
+app.on
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createWindow)

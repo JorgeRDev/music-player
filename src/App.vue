@@ -2,40 +2,61 @@
 import {
   inject,
   onBeforeUnmount,
-  onUnmounted,
+  onMounted,
   provide,
   readonly,
   ref,
   Ref,
   watchEffect,
-} from "vue";
-import "node:path";
-import "node:fs";
-import TitleBar from "./components/TitleBar.vue";
-import PlayerComponent from "./components/PlayerComponent.vue";
-import Menu from "./components/MenuComponent.vue";
-import { playSong, actualSong, musicLibrary } from "./lib/musicPlayer";
-import { isFullScreen } from "./lib/fullscreen";
+} from "vue"
+import "node:path"
+import "node:fs"
+import TitleBar from "./components/TitleBar.vue"
+import PlayerComponent from "./components/PlayerComponent.vue"
+import Menu from "./components/MenuComponent.vue"
+import { playSong, actualSong, musicLibrary } from "./lib/musicPlayer"
+import { isFullScreen } from "./lib/fullscreen"
+import pino, { Logger } from "pino"
 
-const theme: Ref<"light" | "dark" | "system" | undefined> = inject(
+const logger: Logger<never, boolean> = pino({
+  transport: {
+    target: "pino-pretty",
+    options: {
+      colorize: true,
+      levelFirst: true,
+      translateTime: "yyyy-mm-dd HH:MM:ss",
+    },
+  },
+  level: "trace",
+})
+
+logger.info("App.vue has been loaded")
+onMounted(() => {
+  logger.trace("App mounted")
+})
+
+/* const theme: Ref<"light" | "dark" | "system" | undefined> = inject(
   "theme",
-  ref("system")
-);
+  ref("system"),
+) */
 
 watchEffect(() => {
+  logger.info()
   window.App.onFullScreen((_isFullScreen) => {
-    console.log(_isFullScreen);
+    logger.info(`fullscreen event has returned ${_isFullScreen}`)
 
-    isFullScreen.value = _isFullScreen;
-  });
-});
+    isFullScreen.value = _isFullScreen
+  })
+})
 
 onBeforeUnmount(() => {
-  musicLibrary.clearAll();
-});
-provide("musicLibrary", musicLibrary);
-provide("playSong", playSong);
-provide("isFullScreen", isFullScreen);
+  logger.trace("clearing all before unmounting")
+  musicLibrary.clearAll()
+})
+
+provide("musicLibrary", musicLibrary)
+provide("playSong", playSong)
+provide("isFullScreen", isFullScreen)
 </script>
 
 <template>

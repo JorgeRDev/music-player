@@ -5,34 +5,41 @@ import { parseWebStream } from "music-metadata"
 import { uint8ArrayToBase64 } from "uint8array-extras"
 import SongMetadata from "./lib/songMetadata"
 import { createReadStream } from "fs"
-import { Readable } from "stream"
 import { ReadableStream } from "stream/web"
-
 import { inspect } from "util"
+import pino from "pino"
+
+const logger = pino({ level: "trace" })
+
 ipcMain.handle("chooseDirectories", async (): Promise<string[] | null> => {
   try {
-    console.log("Executing chooseDirectories() handler")
+    logger.info("Executing chooseDirectories() handler")
 
-    console.log("Executing dialog.showOpenDialog()")
+    logger.trace(
+      'Executing dialog.showOpenDialog({ properties: ["openDirectory", "multiSelections"],})',
+    )
     const { canceled, filePaths } = await dialog.showOpenDialog({
       properties: ["openDirectory", "multiSelections"],
     })
-
-    console.log(`dialog.showOpenDialog() has returned ${filePaths}`)
+    logger.trace(
+      `dialog.showOpenDialog({ properties: ["openDirectory", "multiSelections"],}) has returned:\n\t${inspect(filePaths, { breakLength: Infinity })}`,
+    )
 
     if (canceled) {
-      console.log("The user has canceled the operation")
+      logger.info("The user has canceled the operation.\nReturning null.")
       return null
     }
 
     if (Array.isArray(filePaths)) {
-      console.log(`Returning ${typeof filePaths} ${filePaths}`)
+      logger.info(
+        `The user has chosen:\n\t${inspect(filePaths, { breakLength: Infinity })}`,
+      )
       return filePaths
     } else {
       return null
     }
   } catch (error) {
-    console.error("Error al seleccionar directorios:", error)
+    logger.error(`Error in chooseDirectories() handler: ${error}`)
     return null
   }
 })
@@ -40,6 +47,8 @@ ipcMain.handle("chooseDirectories", async (): Promise<string[] | null> => {
 ipcMain.on(
   "getSongsPathFromDirectories",
   async (event, directories: string[]) => {
+    logger.info(`executing getSongsPathFromDirectories(${directories}) handler`)
+
     async function readDirRecursively(dir: string): Promise<string[]> {
       const files: string[] = []
 
@@ -65,32 +74,18 @@ ipcMain.on(
       return files
     }
 
-    console.log(`executing getSongsPathFromDirectories(${directories})`)
-
     for (const directory of directories) {
-      const filesPaths = await readDirRecursively(directory)
-
-      for (const filePath of filesPaths) {
-        /* const songInfo: Map<SongPath, SongInfo> = new Map();
-
-        const _songInfo: SongInfo = new SongInfo(filePath);
-
-        await _songInfo.setBuffer();
-        console.log(`_songInfo has recieved ${_songInfo.getBuffer()}`);
-
-        _songInfo.createBlobFromBuffer();
-        console.log(`_songInfo has recieved ${_songInfo.getBlob()}`);
-
-        _songInfo.createURLFromBlob();
-        console.log(`_songInfo has recieved ${_songInfo.getURL()}`);
-
-        _songInfo.createMetadataFromBuffer();
-        console.log(`_songInfo has recieved ${_songInfo.getMetadata()}`);
-
-        _songInfo.createFrontCoverURL();
-        console.log(`_songInfo has recieved ${_songInfo.getFrontCoverURL()}`);
-
-        songInfo.set(filePath, _songInfo); */
+      logger.trace(
+        `executing readDirRecursively(${directory}) of ${directories}`,
+      )
+      const filesPath = await readDirRecursively(directory)
+      logger.trace(
+        `readDirRecursively(${directory}) has returned:\n\t${inspect(filesPath, { breakLength: Infinity, maxArrayLength: 2, maxStringLength: 50 })}`,
+      )
+      logger.info(
+        `emitting getSongsPathFromDirectories-reply event with the filesPath`,
+      )
+      for (const filePath of filesPath) {
         event.sender.send("getSongsPathFromDirectories-reply", filePath)
       }
     }
@@ -100,10 +95,17 @@ ipcMain.on(
 ipcMain.handle(
   "getSong",
   async (event, songPath: string): Promise<Buffer | undefined> => {
+    logger.info(`executing getSong(${songPath}) handler`)
+
+    logger.trace(`reading file ${songPath}`)
     const song = await readFile(songPath)
 
     if (song) {
+      logger.info(`getSong(${songPath}) has returned ${song}`)
       return song
+    } else {
+      logger.info(`getSong(${songPath}) has returned null`)
+      return undefined
     }
   },
 )
@@ -111,7 +113,7 @@ ipcMain.handle(
 ipcMain.handle(
   "getSongInfo",
   async (event, songPath: SongPath): Promise<SongMetadata | null> => {
-    console.log(`executing getSongInfo(${songPath})`)
+    logger.info(`executing getSongInfo(${songPath})`)
 
     let nodeStream
     let songStream
