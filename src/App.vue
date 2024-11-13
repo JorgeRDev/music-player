@@ -101,13 +101,6 @@ provide("isFullScreen", isFullScreen)
     </div>
     <PlayerComponent />
   </main>
-  <audio
-    v-if="actualSong != undefined"
-    :src="actualSong.getURL()"
-    class=""
-    autoplay
-    loop
-  ></audio>
 </template>
 
 <style scoped>

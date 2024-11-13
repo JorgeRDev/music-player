@@ -1,13 +1,13 @@
 import { base64ToUint8Array, uint8ArrayToBase64 } from "uint8array-extras"
 
 class SongInfo {
-  songPath: SongPath
+  songPath: SongPath | undefined
   private buffer: Buffer | undefined
-  private blob: Blob | undefined
-  private url: string | undefined
-  private songMetadata: SongMetadata | undefined
-  private frontCoverURL: string | undefined
-  private frontCoverBlob: Blob | undefined
+  blob: Blob | undefined
+  url: string | undefined
+  songMetadata: SongMetadata | undefined
+  frontCoverURL: string | undefined
+  frontCoverBlob: Blob | undefined
   constructor(songPath: SongPath) {
     console.log(`SongInfo() has been created with ${songPath}`)
 

@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@master/css": "^1.37.8",
+    "@types/howler": "^2.2.12",
     "@vitejs/plugin-vue": "^5.1.4",
     "electron": "^33.0.2",
     "electron-builder": "^25.1.8",

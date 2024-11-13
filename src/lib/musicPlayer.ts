@@ -3,10 +3,11 @@ import { MusicLibrary } from "./musicLibrary"
 import { SongInfo } from "./songInfo"
 import { inject } from "vue"
 import pino, { Logger } from "pino"
+import actualSong from "./actualSong"
 
 const logger: Logger<never, boolean> = pino()
 
-const actualSong: Ref<SongInfo | undefined> = ref(undefined)
+const actualSong: Ref<actualSong | undefined> = ref(undefined)
 
 const musicLibrary: MusicLibrary = new MusicLibrary()
 
