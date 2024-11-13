@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron"
 import { SongInfo } from "../src/lib/songInfo"
+import pino, { Logger } from "pino"
 
 contextBridge.exposeInMainWorld("FileSystem", {
   chooseDirectories: async (): Promise<string[] | null> =>
@@ -25,8 +26,10 @@ contextBridge.exposeInMainWorld("MusicManager", {
 
     return ipcRenderer.invoke("getSong", songPath)
   },
-  getSongInfo: async (songPath: SongPath): Promise<SongInfo | null> =>
-    ipcRenderer.invoke("getSongInfo", songPath),
+  getSongMetadata: async (songPath: SongPath): Promise<SongInfo | null> => {
+    console.info(`executing getSongMetadata(${songPath}) from preload`)
+    return ipcRenderer.invoke("getSongMetadata", songPath)
+  },
 })
 
 contextBridge.exposeInMainWorld("App", {

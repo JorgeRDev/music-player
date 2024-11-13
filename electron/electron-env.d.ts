@@ -34,7 +34,7 @@ declare global {
         directories: string[],
         onSongPath: (songPath: string) => void,
       ) => void
-      getSongInfo: (songPath: SongPath) => Promise<SongInfo>
+      getSongMetadata: (songPath: SongPath) => Promise<SongInfo | null>
       getSong: (songPath) => Promise<Buffer | undefined>
     }
     App: {

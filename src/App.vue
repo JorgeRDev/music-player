@@ -19,18 +19,9 @@ import { isFullScreen } from "./lib/fullscreen"
 import pino, { Logger } from "pino"
 
 const logger: Logger<never, boolean> = pino({
-  transport: {
-    target: "pino-pretty",
-    options: {
-      colorize: true,
-      levelFirst: true,
-      translateTime: "yyyy-mm-dd HH:MM:ss",
-    },
-  },
   level: "trace",
 })
 
-logger.info("App.vue has been loaded")
 onMounted(() => {
   logger.trace("App mounted")
 })

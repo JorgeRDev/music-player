@@ -5,40 +5,12 @@ import { inject } from "vue"
 import pino, { Logger } from "pino"
 
 const logger: Logger<never, boolean> = pino()
-logger.trace("musicPlayer.ts has been loaded")
-logger.trace("creating actualSong")
-logger.info("creating actualSong")
+
 const actualSong: Ref<SongInfo | undefined> = ref(undefined)
 
-logger.info("creating musicLibrary")
 const musicLibrary: MusicLibrary = new MusicLibrary()
 
-logger.info("creating musicQueue")
 const musicQueue: Ref<SongPath[]> = ref([])
-
-const child = logger.child({ a: "property" })
-child.info("executing updateSongs()")
-/* async function updateSongs() {
-  console.log("executing updateSong()");
-
-  const musicLibraryPathsValue: string[] = musicLibrary
-    .getMusicLibraryPaths()
-    .map((path) => path);
-
-  const songsLocated: Map<string, SongInfo> | null =
-    await window.MusicManager.getSongsInfoFromDirectories(
-      musicLibraryPathsValue
-    );
-
-  if (songsLocated != undefined) {
-    for (const song of songsLocated) {
-      console.log(song);
-      songsLibrary.value.set(song[0], song[1]);
-    }
-
-    console.log(songsLibrary);
-  }
-} */
 
 async function playSong(songPath: SongPath) {
   console.log(`playing ${songPath}`)
