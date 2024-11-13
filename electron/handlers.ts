@@ -185,6 +185,7 @@ ipcMain.handle(
       _songMetadata.genre = songMetadata.common.genre
       _songMetadata.duration = songMetadata.format.duration
       _songMetadata.itemType = songMetadata.format.container
+      _songMetadata.format = songMetadata.format.container
 
       logger.info(
         `getSongMetadata(${songPath}) returned ${inspect(_songMetadata, { breakLength: Infinity, maxArrayLength: 2, maxStringLength: 50 })}`,

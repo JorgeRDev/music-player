@@ -1,38 +1,35 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, Ref, ref } from "vue";
-import SongInfo from "lib/songInfo";
-import { base64ToUint8Array } from "uint8array-extras";
+import { computed, inject, onMounted, Ref, ref } from "vue"
+import ActualSong from "../lib/actualSong"
+import { base64ToUint8Array } from "uint8array-extras"
+
+const actualSong: Ref<ActualSong | undefined> = inject(
+  "actualSong",
+  ref(new ActualSong()),
+)
 
 const isFullScreen: Ref<boolean | undefined> = inject(
   "isFullScreen",
-  ref(undefined)
-);
-
-const actualSongURL: Ref<string | undefined> = inject("actualSongURL", ref(""));
-const actualSongInfo: Ref<SongInfo | null> = inject(
-  "actualSongInfo",
-  ref(null)
-);
-const actualSongFrontCoverURL: Ref<string> = inject(
-  "actualSongFrontCoverURL",
-  ref("")
-);
+  ref(undefined),
+)
 </script>
 
 <template>
   <div v-if="!isFullScreen" id="player" class="player">
     <div class="player-content">
+      <p>{{ actualSong?.actualDuration }}</p>
       <div class="pl:2rem pr:1rem">
         <img
-          :src="actualSongFrontCoverURL"
+          :src="actualSong?.getFrontCoverURL()"
           alt="Song Front Cover"
           class="aspect:1/1 w:5rem r:1rem"
         />
       </div>
       <div class="flex flex:column place-content:space-between">
-        <p class="f:medium f:20">{{ actualSongInfo?.title }}</p>
+        <p class="f:medium f:20">{{ actualSong?.songMetadata?.title }}</p>
         <p class="f:medium f:16 f:gray">
-          {{ actualSongInfo?.artist }} - {{ actualSongInfo?.album }}
+          {{ actualSong?.songMetadata?.artist }} -
+          {{ actualSong?.songMetadata?.album }}
         </p>
       </div>
     </div>

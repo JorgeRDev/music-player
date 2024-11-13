@@ -48,6 +48,7 @@ onBeforeUnmount(() => {
 provide("musicLibrary", musicLibrary)
 provide("loadAndPlaySong", loadAndPlaySong)
 provide("isFullScreen", isFullScreen)
+provide("actualSong", actualSong)
 </script>
 
 <template>

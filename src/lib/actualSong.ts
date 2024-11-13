@@ -3,10 +3,11 @@ import { Howl } from "howler"
 import pino, { Logger } from "pino"
 import Song from "./song"
 
-const logger: Logger<never, boolean> = pino()
+const logger: Logger<never, boolean> = pino({ level: "trace" })
 
 export default class actualSong extends Song {
   song: Howl | undefined
+  actualDuration: number | undefined
 
   async loadSong(songPath: SongPath) {
     logger.info(`loading song ${songPath}`)
@@ -27,16 +28,25 @@ export default class actualSong extends Song {
       )
     }
 
-    logger.trace(`creating howl with ${this.url}`)
+    logger.trace(`creating metadata from buffer`)
+    await this.getMetadataFromSongPath()
+
+    logger.trace(`creating howl with ${this.url} without autoplay`)
     this.song = new Howl({
       src: [this.url],
       html5: true,
+      format: this.songMetadata?.format,
+      onplay: () => {
+        setInterval(() => {
+          this.actualDuration = this.song?.seek()
+        }, 1000)
+      },
     })
 
-    logger.trace(`creating metadata from buffer`)
-    await this.getMetadataFromSongPath()
     logger.trace(`creating front cover url`)
-    this.getFrontCoverURL()
+    await this.createFrontCoverBlob()
+    logger.trace(`creating front cover blob`)
+    await this.createFrontCoverURL()
   }
 
   async play() {

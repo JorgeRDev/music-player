@@ -77,7 +77,7 @@ class MusicLibrary {
 
   clearAll() {
     for (const songInfo of this.songsInfo.value.values()) {
-      songInfo.clearAll()
+      songInfo.disposeAll()
     }
     this.songsInfo.value.clear()
     this.songsPath.value.clear()

@@ -97,9 +97,7 @@ export default class Song {
     }
 
     if (this.songMetadata.frontCover === undefined) {
-      throw new Error(
-        "Front cover is undefined. The song does not have a front cover",
-      )
+      return undefined
     }
 
     this.frontCoverBlob = new Blob([
@@ -112,9 +110,7 @@ export default class Song {
     logger.trace(`creating front cover url`)
 
     if (this.frontCoverBlob === undefined) {
-      throw new Error(
-        "Front cover blob is undefined. Try calling createFrontCoverBlob() first before creating a front cover url",
-      )
+      return undefined
     }
 
     this.frontCoverURL = URL.createObjectURL(this.frontCoverBlob)
