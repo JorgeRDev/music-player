@@ -53,10 +53,10 @@ export default class actualSong extends Song {
       src: [this.url],
       html5: true,
       format: this.songMetadata?.format,
+      loop: true,
       onplay: () => {
         setInterval(() => {
           this.actualDuration = this.song?.seek()
-          console.log(this.actualDuration)
         }, 1000)
       },
     })

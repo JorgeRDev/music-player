@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, Ref, ref } from "vue"
+import { computed, inject, onMounted, Ref, ref, watchEffect } from "vue"
 import ActualSong from "../lib/actualSong"
 import { base64ToUint8Array } from "uint8array-extras"
 
@@ -39,25 +39,39 @@ const songDurationFormatted = computed(() =>
   formatTime(actualSong.value?.getMetadata()?.duration ?? 0),
 )
 
-const actualDurationFormatted = computed(() =>
-  formatTime(actualDuration.value ?? 0),
+const tempSliderValueFormatted = computed(() =>
+  formatTime(tempSliderValue.value ?? 0),
 )
+
+const isDragging = ref(false)
+const tempSliderValue = ref(0)
+
+watchEffect(() => {
+  if (!isDragging.value) {
+    tempSliderValue.value = actualDuration.value
+  }
+})
 </script>
 
 <template>
   <div v-if="!isFullScreen" id="player" class="player">
     <div class="player-content">
-      <p>{{ actualDurationFormatted }}</p>
+      <p>{{ tempSliderValueFormatted }}</p>
       <input
         class="ml:3rem"
         type="range"
         min="0"
         :max="actualSong?.getMetadata()?.duration"
-        v-model="actualDuration"
-        @input="
-          (event) => actualSong?.setActualDuration(Number(event.target.value))
+        v-model="tempSliderValue"
+        @mousedown="isDragging = true"
+        @change="
+          (event) => {
+            actualSong?.setActualDuration(Number(event.target.value))
+            isDragging = false
+          }
         "
       />
+      <p>{{ isDragging }}</p>
       <p>{{ songDurationFormatted }}</p>
       <div class="pl:2rem pr:1rem">
         <img
