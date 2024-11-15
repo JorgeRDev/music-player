@@ -23,6 +23,11 @@
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
   --title-bar-height: env(titlebar-area-height, 32px);
+
+  --title-bar-left: env(titlebar-area-x, 0);
+  --title-bar-width: env(titlebar-area-width, 100%);
+
+  --player-height: 130px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,15 +42,23 @@
   }
 }
 
+/* 
+  Disable text selection for all elements and their pseudo-elements
+  Preventing users from selecting text or content throughout the app
+  To feel the app more native and less like a website
+*/
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
-  margin: 0;
-  text-rendering: geometricprecision;
-
   -webkit-user-select: none;
   user-select: none;
+}
+
+img,
+a {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
 }
 
 html {
@@ -63,14 +76,12 @@ html {
     "Droid Sans",
     "Helvetica Neue",
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 html,
 body {
   width: 100vw;
-  height: 100h;
+  height: 100vh;
   background-color: var(--color-background);
 }
 

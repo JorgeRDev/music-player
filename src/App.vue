@@ -107,13 +107,21 @@ provide("tempSliderValue", tempSliderValue)
     </div>
     <PlayerComponent />
   </main>
-  <main v-if="!isFullScreen" class="not-fullscreen">
-    <Menu />
-    <p class="abs top:40px">{{ slider }}</p>
-    <div>
-      <RouterView />
+  <main
+    v-if="!isFullScreen"
+    class="relative height:100% padding-top:$(title-bar-height)"
+  >
+    <div class="flex flex:row">
+      <div class="width:15rem">
+        <Menu />
+      </div>
+      <div class="">
+        <RouterView />
+      </div>
     </div>
-    <PlayerComponent />
+    <div class="abs bottom:0 left:0 height:$(player-height)">
+      <PlayerComponent />
+    </div>
   </main>
 </template>
 

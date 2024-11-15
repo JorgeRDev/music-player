@@ -27,12 +27,14 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
 </script>
 
 <template>
-  <div class="view flex-direction:column gap:1rem max-h:80vh max-w:80vw">
+  <div
+    class="flex-direction:column gap:1rem max-h:80vh max-w:80vw overflow-y:scroll"
+  >
     <h1>Music</h1>
     <button @click="">Select song</button>
     <div
       v-for="song in musicLibrary.getSongsInfo()"
-      class="songItem flex align-items::center max-h:5rem gap:1rem align-items:center f:medium place-content:space-between"
+      class="songItem max-h:5rem gap:1rem align-items:center f:medium place-content:space-between"
     >
       <img
         v-if="song[1].getFrontCoverURL() != undefined"
@@ -52,11 +54,8 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
 </template>
 
 <style>
-.view {
-  overflow-y: scroll;
-}
-
 .songItem {
+  display: flex;
   content-visibility: auto;
 }
 </style>

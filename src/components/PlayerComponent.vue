@@ -109,7 +109,7 @@ watch(isDraggingComputed, () => {
   min-height: 100%;
   max-height: 100%;
   height: 100%;
-  position: relative;
+  position: sticky;
   z-index: 0;
   background-image: var(--player-background-img);
   background-size: cover;
