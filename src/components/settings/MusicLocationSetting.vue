@@ -1,31 +1,34 @@
 <script setup lang="ts">
 import { computed, inject, ref, Ref } from "vue"
 import type { MusicLibrary } from "../../lib/musicLibrary"
+import pino, { Logger } from "pino"
+
+const logger: Logger<never, boolean> = pino({ level: "silent" })
 
 const musicLibrary: MusicLibrary = inject("musicLibrary") as MusicLibrary
 
 const chooseDirectories = async () => {
-  console.log(`executing chooseDirectories()`)
+  logger.info(`executing chooseDirectories()`)
 
-  console.log(`user is choosing directories`)
+  logger.info(`user is choosing directories`)
 
   const directories: string[] | null =
     await window.FileSystem.chooseDirectories()
 
-  console.log(`chooseDirectories() has received ${directories}`)
+  logger.info(`chooseDirectories() has received ${directories}`)
 
   if (directories) {
-    console.log(`adding directories to musicLibrary`)
+    logger.info(`adding directories to musicLibrary`)
     for (const directory of directories) {
-      console.log(`${directory} is being added`)
+      logger.info(`${directory} is being added`)
       musicLibrary.addMusicLibraryPath(directory)
-      console.log(`${directory} has been added`)
+      logger.info(`${directory} has been added`)
     }
 
-    console.log(
+    logger.info(
       `musicLibraryPaths has ${musicLibrary.getMusicLibraryPaths().length} directories`,
     )
-    console.log(`musicLibraryPaths has ${musicLibrary.getMusicLibraryPaths()}`)
+    logger.info(`musicLibraryPaths has ${musicLibrary.getMusicLibraryPaths()}`)
   }
 
   await musicLibrary.createSongsPathFromPaths()

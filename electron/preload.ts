@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron"
 import { SongInfo } from "../src/lib/songInfo"
-import pino, { Logger } from "pino"
 
 contextBridge.exposeInMainWorld("FileSystem", {
   chooseDirectories: async (): Promise<string[] | null> =>
@@ -39,7 +38,7 @@ contextBridge.exposeInMainWorld("MusicManager", {
 
 contextBridge.exposeInMainWorld("App", {
   onFullScreen: (callback: (arg: boolean) => boolean) => {
-    console.log(`onFullscreen() se esta ejecutando desde preload.js`)
+    console.trace(`onFullscreen() se esta ejecutando desde preload.js`)
 
     ipcRenderer.on("is-app-full-screen", (event, isFullScreen: boolean) => {
       if (isFullScreen) {

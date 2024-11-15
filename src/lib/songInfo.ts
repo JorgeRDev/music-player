@@ -1,8 +1,11 @@
 import Song from "./song"
+import pino, { Logger } from "pino"
+
+const logger: Logger<never, boolean> = pino({ level: "silent" })
 
 class SongInfo extends Song {
   constructor(songPath: SongPath) {
-    console.log(`SongInfo() has been created with ${songPath}`)
+    logger.info(`SongInfo() has been created with ${songPath}`)
     super()
     this.songPath = songPath
   }

@@ -9,7 +9,7 @@ import { ReadableStream } from "stream/web"
 import { inspect } from "util"
 import pino from "pino"
 
-const logger = pino({ level: "trace" })
+const logger = pino({ level: "silent" })
 
 ipcMain.handle("chooseDirectories", async (): Promise<string[] | null> => {
   try {
@@ -185,6 +185,7 @@ ipcMain.handle(
       _songMetadata.genre = songMetadata.common.genre
       _songMetadata.duration = songMetadata.format.duration
       _songMetadata.itemType = songMetadata.format.container
+      _songMetadata.format = songMetadata.format.container
 
       logger.info(
         `getSongMetadata(${songPath}) returned ${inspect(_songMetadata, { breakLength: Infinity, maxArrayLength: 2, maxStringLength: 50 })}`,

@@ -1,13 +1,21 @@
 import { ref, Ref } from "vue"
 import { MusicLibrary } from "./musicLibrary"
 import { SongInfo } from "./songInfo"
-import { inject } from "vue"
+import { inject, computed, ComputedRef } from "vue"
 import pino, { Logger } from "pino"
 import ActualSong from "./actualSong"
 
-const logger: Logger<never, boolean> = pino()
+const logger: Logger<never, boolean> = pino({ level: "debug" })
 
 const actualSong: Ref<ActualSong> = ref(new ActualSong())
+
+const actualDuration: ComputedRef<number> = computed(
+  () => actualSong.value.actualDuration ?? 0,
+)
+
+const totalDuration: ComputedRef<number | undefined> = computed(
+  () => actualSong.value.totalDuration,
+)
 
 const musicLibrary: MusicLibrary = new MusicLibrary()
 
@@ -35,4 +43,10 @@ async function loadAndPlaySong(songPath: SongPath) {
   }
 }
 
-export { actualSong, musicLibrary, loadAndPlaySong }
+export {
+  actualSong,
+  musicLibrary,
+  loadAndPlaySong,
+  actualDuration,
+  totalDuration,
+}
