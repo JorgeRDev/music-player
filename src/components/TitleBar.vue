@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import DarkToggleButton from "./ThemeToggleButton.vue";
+import DarkToggleButton from "./ThemeToggleButton.vue"
 
-import IconVue from "./icons/IconVue.vue";
+import IconVue from "./icons/IconVue.vue"
 </script>
 
 <template>
   <div class="title-bar">
-    <p>Media Player</p>
+    <p class="ml:1rem font-color:$(color-text) font-weight:normal">
+      Media Player
+    </p>
   </div>
   <!-- <header
     class="position:sticky top:40px justify-content:space-between width:100%"
@@ -23,6 +25,13 @@ import IconVue from "./icons/IconVue.vue";
 </template>
 
 <style scoped>
+.title-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  place-content: center;
+}
+
 header {
   display: flex;
   flex-direction: row;

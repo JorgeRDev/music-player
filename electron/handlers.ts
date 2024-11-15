@@ -9,7 +9,7 @@ import { ReadableStream } from "stream/web"
 import { inspect } from "util"
 import pino from "pino"
 
-const logger = pino({ level: "trace" })
+const logger = pino({ level: "silent" })
 
 ipcMain.handle("chooseDirectories", async (): Promise<string[] | null> => {
   try {

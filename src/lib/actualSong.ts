@@ -3,7 +3,7 @@ import { Howl } from "howler"
 import pino, { Logger } from "pino"
 import Song from "./song"
 
-const logger: Logger<never, boolean> = pino({ level: "trace" })
+const logger: Logger<never, boolean> = pino({ level: "silent" })
 
 export default class actualSong extends Song {
   song: Howl | undefined
@@ -14,7 +14,7 @@ export default class actualSong extends Song {
       return undefined
     }
 
-    return this.song.seek()
+    return this.actualDuration
   }
 
   setActualDuration(duration: number) {

@@ -3,6 +3,9 @@ import { inject, ref, Ref } from "vue"
 import { SongInfo } from "../lib/songInfo"
 import type { MusicLibrary } from "../lib/musicLibrary"
 import { watch } from "vue"
+import pino, { Logger } from "pino"
+
+const logger: Logger<never, boolean> = pino({ level: "silent" })
 
 const musicLibrary: MusicLibrary = inject("musicLibrary")
 
@@ -19,7 +22,7 @@ const songsLibrary: Ref<Map<string, SongInfo>> = inject(
 )
 
 watch(musicLibrary.getSongsInfo(), (newVal) => {
-  console.log(`musicLibrary.getSongsInfo() has changed to ${newVal}`)
+  logger.info(`musicLibrary.getSongsInfo() has changed to ${newVal}`)
 })
 </script>
 

@@ -1,9 +1,11 @@
 import pino from "pino"
-import { app, BrowserWindow, ipcMain } from "electron"
+import { app, BrowserWindow, ipcMain, nativeTheme } from "electron"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const logger = pino()
+
+let win: BrowserWindow | null
 
 import "./handlers.ts"
 
@@ -20,8 +22,6 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, "public")
   : RENDERER_DIST
 
-let win: BrowserWindow | null
-
 function createWindow() {
   win = new BrowserWindow({
     darkTheme: false,
@@ -30,6 +30,8 @@ function createWindow() {
       color: "#f9f9f9",
       height: 32,
     },
+    minHeight: 154,
+    minWidth: 500,
     titleBarStyle: "hidden",
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
@@ -37,6 +39,10 @@ function createWindow() {
       preload: path.join(__dirname, "./preload.mjs"),
     },
   })
+
+  logger.info(
+    `The native theme is ${nativeTheme.shouldUseDarkColors ? "dark" : "light"}`,
+  )
 
   win.setBackgroundMaterial("mica")
   // Test active push message to Renderer-process.
@@ -90,6 +96,29 @@ function createWindow() {
   }
 }
 
+// Miniplayer
+let isMiniplayer = false
+
+ipcMain.handle("enter-miniplayer", (event) => {
+  isMiniplayer = true
+  win?.setMaximizable(false)
+  win?.setMinimizable(false)
+
+  event.sender.send("miniplayer", isMiniplayer)
+})
+
+ipcMain.handle("leave-miniplayer", (event) => {
+  isMiniplayer = false
+  win?.setMaximizable(true)
+  win?.setMinimizable(true)
+
+  event.sender.send("miniplayer", isMiniplayer)
+})
+
+ipcMain.on("is-miniplayer", (event) => {
+  event.sender.send("is-miniplayer", isMiniplayer)
+})
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
@@ -110,4 +139,19 @@ app.on("activate", () => {
 
 app.on
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createWindow()
+  win?.setTitleBarOverlay({
+    color: nativeTheme.shouldUseDarkColors ? "#222222" : "#f9f9f9",
+    symbolColor: "#808080",
+    height: 32,
+  })
+
+  nativeTheme.on("updated", () => {
+    win?.setTitleBarOverlay({
+      color: nativeTheme.shouldUseDarkColors ? "#222222" : "#f9f9f9",
+      symbolColor: "#909090",
+      height: 32,
+    })
+  })
+})

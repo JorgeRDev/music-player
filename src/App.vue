@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   inject,
+  nextTick,
   onBeforeUnmount,
   onMounted,
   provide,
@@ -14,13 +15,20 @@ import "node:fs"
 import TitleBar from "./components/TitleBar.vue"
 import PlayerComponent from "./components/PlayerComponent.vue"
 import Menu from "./components/MenuComponent.vue"
-import { loadAndPlaySong, actualSong, musicLibrary } from "./lib/musicPlayer"
+import {
+  loadAndPlaySong,
+  actualSong,
+  musicLibrary,
+  actualDuration,
+  totalDuration,
+} from "./lib/musicPlayer"
 import { isFullScreen } from "./lib/fullscreen"
 import pino, { Logger } from "pino"
-
+import { isDragging, tempSliderValue, slider } from "./lib/progressBar"
 const logger: Logger<never, boolean> = pino({
-  level: "trace",
+  level: "silent",
 })
+import ProgressBar from "./components/musicplayer/ProgressBar.vue"
 
 onMounted(() => {
   logger.trace("App mounted")
@@ -32,7 +40,6 @@ onMounted(() => {
 ) */
 
 watchEffect(() => {
-  logger.info()
   window.App.onFullScreen((_isFullScreen) => {
     logger.info(`fullscreen event has returned ${_isFullScreen}`)
 
@@ -49,6 +56,11 @@ provide("musicLibrary", musicLibrary)
 provide("loadAndPlaySong", loadAndPlaySong)
 provide("isFullScreen", isFullScreen)
 provide("actualSong", actualSong)
+provide("actualDuration", actualDuration)
+provide("totalDuration", totalDuration)
+provide("isDragging", isDragging)
+provide("tempSliderValue", tempSliderValue)
+provide("slider", slider)
 </script>
 
 <template>
@@ -74,27 +86,33 @@ provide("actualSong", actualSong)
         </div>
         <div class="">
           <p
-            class="f:white f:medium f:26 text-shadow:0|0|30|rgba(255,255,255,0.3)"
+            class="font-color:white opacity:0.8 f:medium f:26 text-shadow:0|0|30|rgba(255,255,255,0.3)"
           >
             {{ actualSong?.getMetadata()?.title }}
           </p>
           <p
-            class="f:white f:medium f:22 text-shadow:0|0|30|rgba(255,255,255,0.4)"
+            class="font-color:white opacity:0.6 f:medium f:22 text-shadow:0|0|30|rgba(255,255,255,0.4)"
           >
             {{ actualSong?.getMetadata()?.album }}
           </p>
           <p
-            class="f:white f:medium f:20 text-shadow:0|0|30|rgba(255,255,255,0.5)"
+            class="font-color:white opacity:0.6 f:medium f:20 text-shadow:0|0|30|rgba(255,255,255,0.5)"
           >
             {{ actualSong?.getMetadata()?.artist }}
           </p>
+        </div>
+        <div class="w:40rem mt:3rem">
+          <KeepAlive>
+            <ProgressBar />
+          </KeepAlive>
         </div>
       </div>
     </div>
     <PlayerComponent />
   </main>
-  <main v-show="!isFullScreen" class="not-fullscreen mt:2rem">
+  <main v-show="!isFullScreen" class="not-fullscreen">
     <Menu />
+    <p class="abs top:40px">{{ slider }}</p>
     <div>
       <KeepAlive include="home, settings">
         <RouterView />

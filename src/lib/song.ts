@@ -1,7 +1,7 @@
 import pino from "pino"
 import { base64ToUint8Array } from "uint8array-extras"
 
-const logger = pino()
+const logger = pino({ level: "silent" })
 
 /**
  * Base class that contains all the necessary properties and methods to represent songs.
@@ -16,6 +16,7 @@ export default class Song {
   blob: Blob | undefined
   url: string | undefined
   songMetadata: SongMetadata | undefined
+  totalDuration: number | undefined
   frontCoverBlob: Blob | undefined
   frontCoverURL: string | undefined
 
@@ -84,6 +85,7 @@ export default class Song {
     }
 
     this.songMetadata = await window.MusicManager.getSongMetadata(this.songPath)
+    this.setTotalDuration(this.songMetadata?.duration ?? 0)
   }
 
   async createFrontCoverBlob() {
@@ -126,6 +128,14 @@ export default class Song {
 
   getMetadata() {
     return this.songMetadata
+  }
+
+  getTotalDuration() {
+    return this.totalDuration
+  }
+
+  setTotalDuration(totalDuration: number) {
+    this.totalDuration = totalDuration
   }
 
   disposeBlobAndBuffer() {
