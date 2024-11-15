@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex:column px:0.5rem">
+  <div class="flex flex:column px:0.5rem overflow-x:hidden">
     <RouterLink to="/" class="menu-link">
       <div class="aspect:1/1 bg:rgba(107,106,109,0.247) w:1.2rem"></div>
       <span>Music Library</span>
@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<style scoped>
+<style>
 .menu-link {
   display: flex;
   flex-direction: row;

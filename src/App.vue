@@ -109,13 +109,13 @@ provide("tempSliderValue", tempSliderValue)
   </main>
   <main
     v-if="!isFullScreen"
-    class="relative height:100% padding-top:$(title-bar-height)"
+    class="relative height:100% padding-top:$(title-bar-height) max-w:100%"
   >
-    <div class="flex flex:row">
-      <div class="width:15rem">
+    <div class="flex flex:row pb:$(player-height) h:100% w:100%">
+      <div class="flex-basis:12%">
         <Menu />
       </div>
-      <div class="">
+      <div class="flex-basis:88% max-h:100% overflow-y:scroll">
         <RouterView />
       </div>
     </div>

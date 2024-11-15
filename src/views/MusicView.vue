@@ -4,6 +4,7 @@ import { SongInfo } from "../lib/songInfo"
 import type { MusicLibrary } from "../lib/musicLibrary"
 import { watch } from "vue"
 import pino, { Logger } from "pino"
+import { formatTime } from "../lib/time"
 
 const logger: Logger<never, boolean> = pino({ level: "silent" })
 
@@ -27,35 +28,67 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
 </script>
 
 <template>
-  <div
-    class="flex-direction:column gap:1rem max-h:80vh max-w:80vw overflow-y:scroll"
-  >
-    <h1>Music</h1>
-    <button @click="">Select song</button>
-    <div
-      v-for="song in musicLibrary.getSongsInfo()"
-      class="songItem max-h:5rem gap:1rem align-items:center f:medium place-content:space-between"
-    >
+  <h1 class="f:48 f:semibold pl:1rem">Music</h1>
+  <div class="music-library-container">
+    <div class="songItem" v-for="song in musicLibrary.getSongsInfo()">
       <img
         v-if="song[1].getFrontCoverURL() != undefined"
         :src="song[1].getFrontCoverURL()"
         alt=""
-        class="aspect:1/1 w:3rem r:5px"
+        class="aspect:1/1 w:3rem r:8px"
+        @click="loadAndPlaySong(song[0])"
       />
-      <p>{{ song[1].getMetadata()?.title }}</p>
+      <p class="pl:1rem">{{ song[1].getMetadata()?.title }}</p>
       <p>{{ song[1].getMetadata()?.artist }}</p>
-      <p>{{ song[1].getMetadata()?.album }}</p>
-      <p>{{ song[1].getMetadata()?.year }}</p>
-      <p>{{ song[1].getMetadata()?.genre }}</p>
-      <p>{{ song[1].getMetadata()?.duration }}</p>
-      <button @click="loadAndPlaySong(song[0])">Play Song</button>
+      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.album }}</p>
+      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.year }}</p>
+      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.genre }}</p>
+      <p>{{ formatTime(song[1].getMetadata()?.duration) }}</p>
     </div>
   </div>
 </template>
 
 <style>
-.songItem {
+.music-library-container {
   display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-text) transparent;
+  scroll-behavior: smooth;
+}
+
+.songItem {
+  max-height: 4rem;
+  height: 4rem;
+  min-height: 4rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3rem 1fr 1fr 1fr;
+  border-radius: 1rem;
+  padding-left: 0.7rem;
+}
+
+.songItem:hover {
+  background-color: rgba(48, 48, 48, 0.1);
+}
+
+@media (min-width: 600px) {
+  .songItem {
+    display: grid;
+    grid-template-columns: 3rem 1fr 10% 20% 10% 10% 10%;
+  }
+}
+
+.songItem {
   content-visibility: auto;
+  font-weight: 600;
+}
+
+.songItem * {
+  align-self: center;
+  overflow: hidden;
 }
 </style>
