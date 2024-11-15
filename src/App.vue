@@ -24,7 +24,7 @@ import {
 } from "./lib/musicPlayer"
 import { isFullScreen } from "./lib/fullscreen"
 import pino, { Logger } from "pino"
-import { isDragging, tempSliderValue, slider } from "./lib/progressBar"
+import { isDragging, tempSliderValue } from "./lib/progressBar"
 const logger: Logger<never, boolean> = pino({
   level: "silent",
 })
@@ -60,12 +60,11 @@ provide("actualDuration", actualDuration)
 provide("totalDuration", totalDuration)
 provide("isDragging", isDragging)
 provide("tempSliderValue", tempSliderValue)
-provide("slider", slider)
 </script>
 
 <template>
   <TitleBar v-if="!isFullScreen" />
-  <main v-show="isFullScreen" class="fullscreen cursor:none">
+  <main v-if="isFullScreen" class="fullscreen cursor:none">
     <div class="bg:rgba(0,0,0,0.377) h:100vh">
       <div class="fullscreen-content text-align:center">
         <div class="flex flex:column align-items:center">
@@ -102,21 +101,17 @@ provide("slider", slider)
           </p>
         </div>
         <div class="w:40rem mt:3rem">
-          <KeepAlive>
-            <ProgressBar />
-          </KeepAlive>
+          <ProgressBar />
         </div>
       </div>
     </div>
     <PlayerComponent />
   </main>
-  <main v-show="!isFullScreen" class="not-fullscreen">
+  <main v-if="!isFullScreen" class="not-fullscreen">
     <Menu />
     <p class="abs top:40px">{{ slider }}</p>
     <div>
-      <KeepAlive include="home, settings">
-        <RouterView />
-      </KeepAlive>
+      <RouterView />
     </div>
     <PlayerComponent />
   </main>

@@ -33,11 +33,6 @@ watch(isFullScreenComputed, () => {
     if (styles != null) {
       console.log(`updating ${styles}`)
 
-      styles.insertRule(
-        `.track-progress-handle { display: none; }`,
-        styles.cssRules.length,
-      )
-
       Array.from(styles.cssRules).findIndex(
         (rule) => rule.selectorText === ".track-progress-connect",
       ) >= 0 &&
@@ -62,12 +57,23 @@ watch(isFullScreenComputed, () => {
             (rule) => rule.selectorText === ".track-progress-connect",
           ),
         )
+      Array.from(styles.cssRules).findIndex(
+        (rule) => rule.selectorText === ".track-progress-handle",
+      ) >= 0 &&
+        styles.deleteRule(
+          Array.from(styles.cssRules).findIndex(
+            (rule) => rule.selectorText === ".track-progress-handle",
+          ),
+        )
+
       styles.insertRule(
         `.track-progress-connect { background-color: var(--color-text); opacity: 0.6; height: 3px; }`,
         styles.cssRules.length,
       )
-
-      styles.deleteRule(styles.cssRules.length - 1)
+      styles.insertRule(
+        `.track-progress-handle { display: block; }`,
+        styles.cssRules.length,
+      )
     }
   }
 })
@@ -81,7 +87,7 @@ const actualSongMetadata: ComputedRef<SongMetadata | undefined> = computed(
   () => actualSong.value?.songMetadata,
 )
 
-const slider: Ref<SliderAPI | null> = inject("slider", ref(null))
+const slider: Ref<SliderAPI | undefined> = ref(undefined)
 
 const isDragging: Ref<boolean> = inject("isDragging", ref(false))
 
@@ -105,9 +111,9 @@ watchEffect(() => {
   }
 })
 
-onActivated(() => {
+onMounted(() => {
   logger.trace("Activating ProgressBar")
-  if (slider.value === null) {
+  if (slider.value === undefined) {
     logger.trace("Initializing slider")
 
     logger.trace(
@@ -128,27 +134,21 @@ onActivated(() => {
     logger.trace("Slider already initialized. Only updating options")
   }
 
-  watch(actualSongMetadata, () => {
-    if (actualSong.value?.songMetadata) {
-      logger.info("enabling slider")
-      slider.value?.enable()
-      logger.info("updating slider options")
-      slider.value?.updateOptions(
-        {
-          animate: false,
-          range: {
-            min: 0,
-            max: totalDuration.value ?? 0,
-          },
-          connect: "lower",
-          start: [0],
-        },
-        false,
-      )
-    } else {
-      logger.warn("no buffer found. skipping slider update")
-    }
-  })
+  slider.value?.enable()
+  logger.info("enabling slider")
+  logger.info("updating slider options")
+  slider.value?.updateOptions(
+    {
+      animate: false,
+      range: {
+        min: 0,
+        max: totalDuration.value ?? 0,
+      },
+      connect: "lower",
+      start: [0],
+    },
+    false,
+  )
 
   slider.value?.on("start", () => {
     logger.info(`The user has started dragging the slider`)
@@ -176,8 +176,10 @@ onActivated(() => {
   })
 })
 
-onDeactivated(() => {
+onUnmounted(() => {
   logger.trace("Deactivating ProgressBar")
+  slider.value?.destroy()
+  logger.info("destroyed slider: ", slider.value)
 })
 </script>
 

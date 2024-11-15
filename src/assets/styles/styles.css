@@ -23,7 +23,7 @@ main.not-fullscreen {
     "a b"
     "c c";
   grid-template-columns: minmax(10rem, 30rem) 1fr;
-  grid-template-rows: 1fr 120px;
+  grid-template-rows: 1fr 152px;
 }
 
 .menu {
