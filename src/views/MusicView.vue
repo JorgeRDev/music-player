@@ -28,36 +28,87 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
 </script>
 
 <template>
-  <h1 class="f:48 f:semibold pl:1rem">Music</h1>
   <div class="music-library-container">
-    <div class="songItem" v-for="song in musicLibrary.getSongsInfo()">
-      <img
-        v-if="song[1].getFrontCoverURL() != undefined"
-        :src="song[1].getFrontCoverURL()"
-        alt=""
-        class="aspect:1/1 w:3rem r:8px"
-        @click="loadAndPlaySong(song[0])"
-      />
-      <p class="pl:1rem">{{ song[1].getMetadata()?.title }}</p>
-      <p>{{ song[1].getMetadata()?.artist }}</p>
-      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.album }}</p>
-      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.year }}</p>
-      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.genre }}</p>
-      <p>{{ formatTime(song[1].getMetadata()?.duration) }}</p>
+    <div
+      class="flex-shrink:0 sticky top:0 p:0|0|1rem|1rem bg:$(color-background)"
+    >
+      <h1 class="f:48">Music</h1>
+      <!-- TODO: create views for songs, artists, albums, genres, etc -->
+      <div class="flex gap:1rem place-content:center">
+        <p class="f:gray">Songs</p>
+        <p class="f:gray">Artists</p>
+        <p class="f:gray">Albums</p>
+        <p class="f:gray">Genres</p>
+      </div>
+    </div>
+    <div class="music-library-content">
+      <div class="song-list">
+        <div class="songItem" v-for="song in musicLibrary.getSongsInfo()">
+          <div
+            class="aspect:1/1 w:3rem r:8px bg:rgba(0,0,0,0.479)"
+            @click="loadAndPlaySong(song[0])"
+          >
+            <img
+              v-if="song[1].getFrontCoverURL() != undefined"
+              :src="song[1].getFrontCoverURL()"
+              alt=""
+            />
+          </div>
+          <p class="pl:1rem">{{ song[1].getMetadata()?.title }}</p>
+          <p>{{ song[1].getMetadata()?.artist ?? "Unknown Artist" }}</p>
+          <p class="hidden@3xs block@xs">
+            {{ song[1].getMetadata()?.album ?? "Unknown Album" }}
+          </p>
+          <p class="hidden@3xs block@md">
+            {{ song[1].getMetadata()?.year ?? "Unknown Year" }}
+          </p>
+          <div
+            class="hidden@3xs block@md"
+            v-for="genre in song[1].getMetadata()?.genre"
+            v-if="song[1].songMetadata?.genre != undefined"
+          >
+            <p>{{ genre }}</p>
+          </div>
+          <div v-else>
+            <p>Unknown Genre</p>
+          </div>
+          <p>{{ formatTime(song[1].getMetadata()?.duration ?? 0) }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style>
 .music-library-container {
+  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-  overflow-x: hidden;
+}
+
+.music-library-content {
+  flex: 1;
+  height: 100%;
+  scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--color-text) transparent;
+  overflow-x: hidden;
+  background-color: rgba(71, 71, 71, 0.1);
+  border-radius: 1rem 0 0 0;
+  padding: 1rem;
+  overflow-y: hidden;
+}
+
+.song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  overflow-y: auto;
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-text) transparent;
 }
 
 .songItem {
@@ -66,28 +117,36 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
   min-height: 4rem;
   width: 100%;
   display: grid;
-  grid-template-columns: 3rem 1fr 1fr 1fr;
+  grid-template-columns: 3rem 1fr 1fr 3.5rem;
   border-radius: 1rem;
   padding-left: 0.7rem;
 }
 
 .songItem:hover {
-  background-color: rgba(48, 48, 48, 0.1);
+  background-color: rgba(114, 114, 114, 0.3);
 }
 
 @media (min-width: 600px) {
   .songItem {
     display: grid;
-    grid-template-columns: 3rem 1fr 10% 20% 10% 10% 10%;
+    grid-template-columns: 3rem 1fr 1fr 1fr 3.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .songItem {
+    grid-template-columns: 3rem 1fr 13% 30% 5% 15% 4rem;
+    gap: 0.5rem;
   }
 }
 
 .songItem {
-  content-visibility: auto;
-  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .songItem * {
+  text-overflow: ellipsis;
   align-self: center;
   overflow: hidden;
 }

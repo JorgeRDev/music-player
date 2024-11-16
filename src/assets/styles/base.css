@@ -84,6 +84,7 @@ body {
   height: 100vh;
   background-color: var(--color-background);
   overflow: hidden;
+  color: var(--color-text);
 }
 
 #app {

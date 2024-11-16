@@ -14,6 +14,7 @@ import ProgressBar from "./musicplayer/ProgressBar.vue"
 import { formatTime } from "../lib/time"
 import pino, { Logger } from "pino"
 import { SliderAPI } from "vue-slider-component"
+import PlayButton from "./button/PlayButton.vue"
 
 const logger: Logger<never, boolean> = pino({ level: "trace" })
 
@@ -21,6 +22,20 @@ const actualSong: Ref<ActualSong | undefined> = inject(
   "actualSong",
   ref(new ActualSong()),
 )
+
+const playPauseSong: () => Promise<void> = inject("playPauseSong", async () => {
+  if (actualSong.value.song === undefined) {
+    throw new Error("Song is undefined. Try calling loadAndPlaySong() first")
+  }
+
+  const isPlaying = await actualSong.value.isPlaying()
+
+  if (isPlaying) {
+    await actualSong.value.pause()
+  } else {
+    await actualSong.value.play()
+  }
+})
 
 const actualDuration: ComputedRef<number> = inject(
   "actualDuration",
@@ -77,31 +92,71 @@ watch(isDraggingComputed, () => {
       {{ totalDurationFormatted }}
     </p>
     <div class="player-content">
-      <div class="front-cover aspect:1/1 h:90%">
-        <img
-          :src="actualSong?.getFrontCoverURL()"
-          alt="Song Front Cover"
-          class="aspect:1/1 h:100% r:1rem"
-        />
+      <div class="song-info-container">
+        <div
+          class="aspect:1/1 h:100% bg:rgba(29,29,29,0.329) r:1rem overflow:clip"
+        >
+          <img
+            v-if="actualSong?.frontCoverURL != undefined"
+            :src="actualSong?.frontCoverURL"
+            alt="Song Front Cover"
+            class="aspect:1/1 h:100% min-w:100%"
+          />
+        </div>
+        <div class="flex flex:column ml:1.5rem">
+          <p
+            class="f:medium f:20 font-color:$(color-text) text-shadow:3rem|0|3rem|rgba(5,5,5,0.993) text-overflow:ellipsis lines:1"
+          >
+            {{ actualSong?.songMetadata?.title }}
+          </p>
+          <p
+            class="f:medium f:16 font-color:$(color-text) text-shadow:4rem|0|3rem|rgba(0,0,0,0.849) text-overflow:ellipsis lines:2"
+            v-if="actualSong?.songMetadata?.artist != undefined"
+          >
+            {{ actualSong?.songMetadata?.artist }} -
+            {{ actualSong?.songMetadata?.album }}
+          </p>
+        </div>
       </div>
-      <div class="flex flex:column place-content:space-between ml:1rem">
-        <p
-          class="f:medium f:20 font-color:$(color-text) text-shadow:3rem|0|3rem|rgba(255,255,255,0.993)"
-        >
-          {{ actualSong?.songMetadata?.title }}
-        </p>
-        <p
-          class="f:medium f:16 font-color:$(color-text) text-shadow:4rem|0|3rem|rgba(255,255,255,0.849)"
-        >
-          {{ actualSong?.songMetadata?.artist }} -
-          {{ actualSong?.songMetadata?.album }}
-        </p>
+      <div class="controls-container">
+        <button class="aspect:1/1 h:2rem bg:gray">Ra</button>
+        <button class="aspect:1/1 h:2rem bg:gray">Pr</button>
+        <PlayButton />
+        <button class="aspect:1/1 h:2rem bg:gray">Ne</button>
+        <button class="aspect:1/1 h:2rem bg:gray">Lo</button>
+      </div>
+      <div class="settings-container">
+        <button>Menu</button>
       </div>
     </div>
   </div>
 </template>
 
 <style>
+.controls-container {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-self: center;
+}
+
+.song-info-container {
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
+  height: 100%;
+  overflow: hidden;
+}
+
+.settings-container {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-self: end;
+}
+
 .player {
   max-width: 100dvw;
   min-width: 100dvw;
@@ -137,10 +192,10 @@ watch(isDraggingComputed, () => {
 .player-progress-bar {
   position: absolute;
   z-index: 300;
-  bottom: 5px;
+  top: -8px;
   left: 0;
   width: 100%;
-  height: 100%;
+  cursor: pointer;
 }
 
 .player-progress-bar > * {
@@ -151,12 +206,13 @@ watch(isDraggingComputed, () => {
   overflow: hidden;
   width: 100%;
   height: 100%;
-  display: flex;
+  max-height: 100%;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.5fr;
   position: absolute;
   align-items: center;
   flex-flow: row nowrap;
-  padding: 0.8rem;
-  padding-top: 1.6rem;
+  padding: 1.6rem 1rem 0.8rem 1rem;
 }
 
 .player-content > * {

@@ -8,6 +8,7 @@ import { createReadStream } from "fs"
 import { ReadableStream } from "stream/web"
 import { inspect } from "util"
 import pino from "pino"
+import { basename } from "node:path"
 
 const logger = pino({ level: "silent" })
 
@@ -172,7 +173,11 @@ ipcMain.handle(
 
     if (songMetadata != undefined) {
       const _songMetadata: SongMetadata = new SongMetadata()
-      _songMetadata.title = songMetadata.common.title
+      if (songMetadata.common.title != undefined) {
+        _songMetadata.title = songMetadata.common.title
+      } else {
+        _songMetadata.title = basename(songPath, extname(songPath))
+      }
       _songMetadata.album = songMetadata.common.album
       if (songMetadata.common.picture != undefined) {
         _songMetadata.frontCover = uint8ArrayToBase64(

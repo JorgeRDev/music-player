@@ -21,6 +21,7 @@ import {
   musicLibrary,
   actualDuration,
   totalDuration,
+  playPauseSong,
 } from "./lib/musicPlayer"
 import { isFullScreen } from "./lib/fullscreen"
 import pino, { Logger } from "pino"
@@ -60,6 +61,7 @@ provide("actualDuration", actualDuration)
 provide("totalDuration", totalDuration)
 provide("isDragging", isDragging)
 provide("tempSliderValue", tempSliderValue)
+provide("playPauseSong", playPauseSong)
 </script>
 
 <template>
@@ -108,24 +110,31 @@ provide("tempSliderValue", tempSliderValue)
     <PlayerComponent />
   </main>
   <main
-    v-if="!isFullScreen"
+    v-show="!isFullScreen"
     class="relative height:100% padding-top:$(title-bar-height) max-w:100%"
   >
     <div class="flex flex:row pb:$(player-height) h:100% w:100%">
       <div class="flex-basis:12%">
         <Menu />
       </div>
-      <div class="flex-basis:88% max-h:100% overflow-y:scroll">
+      <div class="views">
         <RouterView />
       </div>
     </div>
-    <div class="abs bottom:0 left:0 height:$(player-height)">
+    <div
+      class="abs bottom:0 left:0 min-h:$(player-height) height:$(player-height) max-h:$(player-height)"
+    >
       <PlayerComponent />
     </div>
   </main>
 </template>
 
 <style scoped>
+.views {
+  flex-basis: 88%;
+  max-height: 100%;
+}
+
 .fullscreen {
   width: 100%;
 
