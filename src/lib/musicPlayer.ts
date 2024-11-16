@@ -43,10 +43,26 @@ async function loadAndPlaySong(songPath: SongPath) {
   }
 }
 
+async function playPauseSong() {
+  logger.info(`executing playPauseSong()`)
+  if (actualSong.value.song === undefined) {
+    throw new Error("Song is undefined. Try calling loadAndPlaySong() first")
+  }
+
+  const isPlaying = await actualSong.value.isPlaying()
+
+  if (isPlaying) {
+    await actualSong.value.pause()
+  } else {
+    await actualSong.value.play()
+  }
+}
+
 export {
   actualSong,
   musicLibrary,
   loadAndPlaySong,
+  playPauseSong,
   actualDuration,
   totalDuration,
 }

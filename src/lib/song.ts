@@ -1,5 +1,6 @@
 import pino from "pino"
 import { base64ToUint8Array } from "uint8array-extras"
+import SongMetadata from "./songMetadata"
 
 const logger = pino({ level: "silent" })
 
@@ -85,6 +86,7 @@ export default class Song {
     }
 
     this.songMetadata = await window.MusicManager.getSongMetadata(this.songPath)
+
     this.setTotalDuration(this.songMetadata?.duration ?? 0)
   }
 

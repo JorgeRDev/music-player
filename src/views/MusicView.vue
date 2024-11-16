@@ -28,22 +28,38 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
 </script>
 
 <template>
-  <h1 class="f:48 f:semibold pl:1rem">Music</h1>
+  <h1 class="f:48 pl:1rem">Music</h1>
   <div class="music-library-container">
     <div class="songItem" v-for="song in musicLibrary.getSongsInfo()">
-      <img
-        v-if="song[1].getFrontCoverURL() != undefined"
-        :src="song[1].getFrontCoverURL()"
-        alt=""
-        class="aspect:1/1 w:3rem r:8px"
+      <div
+        class="aspect:1/1 w:3rem r:8px bg:rgba(0,0,0,0.479)"
         @click="loadAndPlaySong(song[0])"
-      />
+      >
+        <img
+          v-if="song[1].getFrontCoverURL() != undefined"
+          :src="song[1].getFrontCoverURL()"
+          alt=""
+        />
+      </div>
       <p class="pl:1rem">{{ song[1].getMetadata()?.title }}</p>
-      <p>{{ song[1].getMetadata()?.artist }}</p>
-      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.album }}</p>
-      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.year }}</p>
-      <p class="hidden@3xs block@xs">{{ song[1].getMetadata()?.genre }}</p>
-      <p>{{ formatTime(song[1].getMetadata()?.duration) }}</p>
+      <p>{{ song[1].getMetadata()?.artist ?? "Unknown Artist" }}</p>
+      <p class="hidden@3xs block@xs">
+        {{ song[1].getMetadata()?.album ?? "Unknown Album" }}
+      </p>
+      <p class="hidden@3xs block@md">
+        {{ song[1].getMetadata()?.year ?? "Unknown Year" }}
+      </p>
+      <div
+        class="hidden@3xs block@md"
+        v-for="genre in song[1].getMetadata()?.genre"
+        v-if="song[1].songMetadata?.genre != undefined"
+      >
+        <p>{{ genre }}</p>
+      </div>
+      <div v-else>
+        <p>Unknown Genre</p>
+      </div>
+      <p>{{ formatTime(song[1].getMetadata()?.duration ?? 0) }}</p>
     </div>
   </div>
 </template>
@@ -66,7 +82,7 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
   min-height: 4rem;
   width: 100%;
   display: grid;
-  grid-template-columns: 3rem 1fr 1fr 1fr;
+  grid-template-columns: 3rem 1fr 1fr 3.5rem;
   border-radius: 1rem;
   padding-left: 0.7rem;
 }
@@ -78,16 +94,23 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
 @media (min-width: 600px) {
   .songItem {
     display: grid;
-    grid-template-columns: 3rem 1fr 10% 20% 10% 10% 10%;
+    grid-template-columns: 3rem 1fr 1fr 1fr 3.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .songItem {
+    grid-template-columns: 3rem 1fr 13% 30% 5% 15% 4rem;
+    gap: 0.5rem;
   }
 }
 
 .songItem {
   content-visibility: auto;
-  font-weight: 600;
 }
 
 .songItem * {
+  text-overflow: ellipsis;
   align-self: center;
   overflow: hidden;
 }

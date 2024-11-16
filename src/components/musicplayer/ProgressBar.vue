@@ -215,6 +215,7 @@ onUnmounted(() => {
   border: none;
   background-color: var(--color-text);
   box-shadow: none;
+  cursor: pointer;
 }
 
 .track-progress-handle::before,

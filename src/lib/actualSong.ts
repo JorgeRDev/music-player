@@ -67,6 +67,27 @@ export default class actualSong extends Song {
     await this.createFrontCoverURL()
   }
 
+  async isPlaying(): Promise<boolean> {
+    if (this.song === undefined) {
+      return false
+    }
+
+    return this.song.playing()
+  }
+
+  async pause() {
+    logger.info(`pausing song`)
+    if (this.song === undefined) {
+      throw new Error("Song is undefined. Try calling loadSong() first")
+    }
+
+    try {
+      this.song.pause()
+    } catch (error) {
+      logger.error(`error pausing song: ${error}`)
+    }
+  }
+
   async play() {
     if (this.song === undefined) {
       throw new Error("Song is undefined. Try calling loadSong() first")

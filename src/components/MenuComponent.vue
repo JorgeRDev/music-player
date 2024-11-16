@@ -1,15 +1,15 @@
 <template>
   <div class="flex flex:column px:0.5rem overflow-x:hidden">
     <RouterLink to="/" class="menu-link">
-      <div class="aspect:1/1 bg:rgba(107,106,109,0.247) w:1.2rem"></div>
+      <div class="aspect:1/1 bg:rgba(107,106,109,0.247) h:1rem"></div>
       <span>Music Library</span>
     </RouterLink>
     <RouterLink to="/settings" class="menu-link">
-      <div class="aspect:1/1 bg:rgba(107,106,109,0.247) w:1.2rem"></div>
+      <div class="aspect:1/1 bg:rgba(107,106,109,0.247) h:1rem"></div>
       <span>Settings</span>
     </RouterLink>
     <RouterLink to="/playlist" class="menu-link">
-      <div class="aspect:1/1 bg:rgba(107,106,109,0.247) w:1.2rem"></div>
+      <div class="aspect:1/1 bg:rgba(107,106,109,0.247) h:1rem"></div>
       <span>Playlist</span>
     </RouterLink>
   </div>
