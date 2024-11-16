@@ -28,7 +28,16 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
 </script>
 
 <template>
-  <h1 class="f:48 pl:1rem">Music</h1>
+  <div class="sticky top:0 p:0|0|1rem|1rem bg:$(color-background)">
+    <h1 class="f:48">Music</h1>
+    <!-- TODO: create views for songs, artists, albums, genres, etc -->
+    <div class="flex gap:1rem place-content:center">
+      <p class="f:gray">Songs</p>
+      <p class="f:gray">Artists</p>
+      <p class="f:gray">Albums</p>
+      <p class="f:gray">Genres</p>
+    </div>
+  </div>
   <div class="music-library-container">
     <div class="songItem" v-for="song in musicLibrary.getSongsInfo()">
       <div
@@ -74,6 +83,9 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
   scrollbar-width: thin;
   scrollbar-color: var(--color-text) transparent;
   scroll-behavior: smooth;
+  background-color: rgba(71, 71, 71, 0.1);
+  border-radius: 1rem;
+  padding: 1rem;
 }
 
 .songItem {
