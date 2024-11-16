@@ -133,10 +133,8 @@ provide("playPauseSong", playPauseSong)
 .views {
   flex-basis: 88%;
   max-height: 100%;
-  overflow-y: scroll;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-text) transparent;
 }
+
 .fullscreen {
   width: 100%;
 
