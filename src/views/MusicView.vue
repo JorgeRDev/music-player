@@ -106,7 +106,6 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
 }
 
 .songItem {
-  content-visibility: auto;
 }
 
 .songItem * {

@@ -110,7 +110,7 @@ provide("playPauseSong", playPauseSong)
     <PlayerComponent />
   </main>
   <main
-    v-if="!isFullScreen"
+    v-show="!isFullScreen"
     class="relative height:100% padding-top:$(title-bar-height) max-w:100%"
   >
     <div class="flex flex:row pb:$(player-height) h:100% w:100%">
