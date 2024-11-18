@@ -55,7 +55,9 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
             />
           </div>
           <p class="pl:1rem">{{ song[1].getMetadata()?.title }}</p>
-          <p>{{ song[1].getMetadata()?.artist ?? "Unknown Artist" }}</p>
+          <p>
+            {{ song[1].getMetadata()?.artist ?? "Unknown Artist" }}
+          </p>
           <p class="hidden@3xs block@xs">
             {{ song[1].getMetadata()?.album ?? "Unknown Album" }}
           </p>
@@ -69,7 +71,7 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
           >
             <p>{{ genre }}</p>
           </div>
-          <div v-else>
+          <div v-else class="hidden@3xs block@md">
             <p>Unknown Genre</p>
           </div>
           <p>{{ formatTime(song[1].getMetadata()?.duration ?? 0) }}</p>
@@ -94,7 +96,7 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
   scrollbar-width: thin;
   scrollbar-color: var(--color-text) transparent;
   overflow-x: hidden;
-  background-color: rgba(71, 71, 71, 0.1);
+  background-color: #fafafa;
   border-radius: 1rem 0 0 0;
   padding: 1rem;
   overflow-y: hidden;
@@ -120,6 +122,7 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
   grid-template-columns: 3rem 1fr 1fr 3.5rem;
   border-radius: 1rem;
   padding-left: 0.7rem;
+  font-weight: 500;
 }
 
 .songItem:hover {

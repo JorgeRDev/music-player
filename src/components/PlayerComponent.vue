@@ -15,6 +15,7 @@ import { formatTime } from "../lib/time"
 import pino, { Logger } from "pino"
 import { SliderAPI } from "vue-slider-component"
 import PlayButton from "./button/PlayButton.vue"
+import Lyrics from "./ui/Lyrics.vue"
 
 const logger: Logger<never, boolean> = pino({ level: "trace" })
 
@@ -82,11 +83,13 @@ watch(isDraggingComputed, () => {
       </KeepAlive>
     </div>
     <p
+      v-if="totalDuration != undefined"
       class="abs f:13 font-color:$(color-text) f:medium z-index:700 top:6 left:10"
     >
       {{ tempSliderValueFormatted }}
     </p>
     <p
+      v-if="totalDuration != undefined"
       class="abs f:13 font-color:$(color-text) f:medium z-index:700 top:6 right:10"
     >
       {{ totalDurationFormatted }}
@@ -103,14 +106,14 @@ watch(isDraggingComputed, () => {
             class="aspect:1/1 h:100% min-w:100%"
           />
         </div>
-        <div class="flex flex:column ml:1.5rem">
+        <div class="flex flex:column ml:1.5rem overflow:visible">
           <p
-            class="f:medium f:20 font-color:$(color-text) text-shadow:3rem|0|3rem|rgba(5,5,5,0.993) text-overflow:ellipsis lines:1"
+            class="f:medium f:20 font-color:$(color-text) text-overflow:ellipsis lines:1"
           >
             {{ actualSong?.songMetadata?.title }}
           </p>
           <p
-            class="f:medium f:16 font-color:$(color-text) text-shadow:4rem|0|3rem|rgba(0,0,0,0.849) text-overflow:ellipsis lines:2"
+            class="f:medium f:16 font-color:$(color-text) text-overflow:ellipsis lines:2"
             v-if="actualSong?.songMetadata?.artist != undefined"
           >
             {{ actualSong?.songMetadata?.artist }} -
@@ -119,13 +122,10 @@ watch(isDraggingComputed, () => {
         </div>
       </div>
       <div class="controls-container">
-        <button class="aspect:1/1 h:2rem bg:gray">Ra</button>
-        <button class="aspect:1/1 h:2rem bg:gray">Pr</button>
         <PlayButton />
-        <button class="aspect:1/1 h:2rem bg:gray">Ne</button>
-        <button class="aspect:1/1 h:2rem bg:gray">Lo</button>
       </div>
       <div class="settings-container">
+        <Lyrics />
         <button>Menu</button>
       </div>
     </div>
@@ -151,8 +151,8 @@ watch(isDraggingComputed, () => {
 
 .settings-container {
   display: flex;
-  flex-flow: column nowrap;
-  gap: 0.5rem;
+  flex-flow: row nowrap;
+  gap: 4rem;
   align-items: center;
   justify-self: end;
 }
