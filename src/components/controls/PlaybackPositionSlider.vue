@@ -14,8 +14,9 @@ import {
   onDeactivated,
 } from "vue"
 import ActualSong from "../../lib/actualSong"
-import { create, API as SliderAPI } from "nouislider"
+import { create as createSlider, API as SliderAPI } from "nouislider"
 import pino from "pino"
+import { slider, isDragging } from "../../lib/playbackPositionSlider"
 
 const logger = pino({
   level: "trace",
@@ -80,20 +81,17 @@ watch(isFullScreenComputed, () => {
 
 const actualSong: Ref<ActualSong | undefined> = inject(
   "actualSong",
-  ref(new ActualSong()),
+  ref(undefined),
+)
+
+const tempSliderValue: Ref<number> = inject("tempSliderValue", ref(0))
+
+const totalDuration: ComputedRef<number | undefined> = computed(
+  () => actualSong.value?.totalDuration,
 )
 
 const actualSongMetadata: ComputedRef<SongMetadata | undefined> = computed(
   () => actualSong.value?.songMetadata,
-)
-
-const slider: Ref<SliderAPI | undefined> = ref(undefined)
-
-const isDragging: Ref<boolean> = inject("isDragging", ref(false))
-
-const totalDuration: ComputedRef<number | undefined> = inject(
-  "totalDuration",
-  computed(() => actualSong.value?.totalDuration),
 )
 
 const sliderHTMLElement: Ref<HTMLElement | null> = ref(null)
@@ -103,8 +101,6 @@ const actualDuration: ComputedRef<number> = inject(
   computed(() => actualSong.value?.getActualDuration() ?? 0),
 )
 
-const tempSliderValue: Ref<number> = inject("tempSliderValue", ref(0))
-
 watchEffect(() => {
   if (!isDragging.value) {
     tempSliderValue.value = actualDuration.value
@@ -113,42 +109,65 @@ watchEffect(() => {
 
 onMounted(() => {
   logger.trace("Activating ProgressBar")
-  if (slider.value === undefined) {
-    logger.trace("Initializing slider")
 
-    logger.trace(
-      `Trying to create slider HTMLElement within ${sliderHTMLElement.value}`,
-    )
+  logger.trace("Initializing slider")
 
-    slider.value = create(sliderHTMLElement.value!, {
-      range: {
-        min: 0,
-        max: 100,
+  logger.trace(
+    `Trying to create slider HTMLElement within ${sliderHTMLElement.value}`,
+  )
+
+  slider.value = createSlider(sliderHTMLElement.value!, {
+    range: {
+      min: 0,
+      max: 100,
+    },
+    start: [0],
+    cssPrefix: "track-progress-",
+  })
+
+  slider.value.disable()
+
+  if (totalDuration.value != undefined) {
+    if (!isFullScreenComputed.value) {
+      slider.value?.enable()
+    }
+
+    slider.value?.updateOptions(
+      {
+        animate: false,
+        range: {
+          min: 0,
+          max: totalDuration.value ?? 0,
+        },
+        connect: "lower",
+        start: [0],
       },
-      start: [0],
-      cssPrefix: "track-progress-",
-    })
-
-    slider.value.disable()
-  } else {
-    logger.trace("Slider already initialized. Only updating options")
+      false,
+    )
   }
 
-  slider.value?.enable()
-  logger.info("enabling slider")
-  logger.info("updating slider options")
-  slider.value?.updateOptions(
-    {
-      animate: false,
-      range: {
-        min: 0,
-        max: totalDuration.value ?? 0,
+  watch(totalDuration, () => {
+    if (!isFullScreenComputed.value) {
+      slider.value?.enable()
+    }
+
+    slider.value?.updateOptions(
+      {
+        animate: false,
+        range: {
+          min: 0,
+          max: totalDuration.value ?? 0,
+        },
+        connect: "lower",
+        start: [0],
       },
-      connect: "lower",
-      start: [0],
-    },
-    false,
-  )
+      false,
+    )
+    logger.info("enabling slider")
+    logger.info("updating slider options")
+  })
+
+  slider.value?.set(actualDuration.value)
 
   slider.value?.on("start", () => {
     logger.info(`The user has started dragging the slider`)
@@ -178,7 +197,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   logger.trace("Deactivating ProgressBar")
-  slider.value?.destroy()
   logger.info("destroyed slider: ", slider.value)
 })
 </script>
@@ -196,6 +214,15 @@ onUnmounted(() => {
 
 [disabled].track-progress-target {
   cursor: default;
+}
+[disabled] .track-progress-base::before {
+  background-color: gray;
+  opacity: 0.3;
+}
+
+[disabled] .track-progress-connect {
+  background-color: white;
+  opacity: 0.6;
 }
 
 .track-progress-horizontal {
