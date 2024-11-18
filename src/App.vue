@@ -1,167 +1,138 @@
 <script setup lang="ts">
 import {
-  computed,
   inject,
+  nextTick,
+  onBeforeUnmount,
   onMounted,
   provide,
   readonly,
   ref,
   Ref,
   watchEffect,
-  ComputedRef,
-} from "vue";
-import "node:path";
-import "node:fs";
-import { ipcRenderer } from "electron";
-import TitleBar from "./components/TitleBar.vue";
-import PlayerComponent from "./components/PlayerComponent.vue";
-import { watch } from "node:fs";
-import SongInfo from "../lib/songInfo";
-import { base64ToUint8Array } from "uint8array-extras";
-import Menu from "./components/MenuComponent.vue";
+} from "vue"
+import "node:path"
+import "node:fs"
+import TitleBar from "./components/TitleBar.vue"
+import PlayerComponent from "./components/PlayerComponent.vue"
+import Menu from "./components/MenuComponent.vue"
+import {
+  loadAndPlaySong,
+  actualSong,
+  musicLibrary,
+  actualDuration,
+  totalDuration,
+  playPauseSong,
+} from "./lib/musicPlayer"
+import { isFullScreen } from "./lib/fullscreen"
+import pino, { Logger } from "pino"
+import { isDragging, tempSliderValue } from "./lib/progressBar"
+const logger: Logger<never, boolean> = pino({
+  level: "silent",
+})
+import ProgressBar from "./components/controls/PlaybackPositionSlider.vue"
 
-const musicLibraryPaths: Ref<string[]> = ref([]);
+onMounted(() => {
+  logger.trace("App mounted")
+})
 
-const isFullScreen: Ref<boolean | undefined> = ref(undefined);
-
-const actualSongURL: Ref<string> = ref("");
-const actualSongInfo: Ref<SongInfo | null> = ref(null);
-const actualSongFrontCoverURL: Ref<string> = ref("");
-
-const songsLibrary: Ref<Map<string, SongInfo>> = ref(new Map());
-const songsUrlLibrary: Ref<string[]> = ref([]);
-
-const addMusicLibraryPath = (dir: string) => {
-  if (dir) {
-    musicLibraryPaths.value.push(dir);
-  }
-};
-const removeMusicLibraryPath = (index: number) => {
-  musicLibraryPaths.value.splice(index, 1);
-};
-
-const updateSongs = async () => {
-  console.log("executing updateSong()");
-
-  const musicLibraryPathsValue: string[] = musicLibraryPaths.value.map(
-    (path) => path
-  );
-
-  const songsLocated: Map<string, SongInfo> | null =
-    await window.MusicManager.getSongsInfoFromDirectories(
-      musicLibraryPathsValue
-    );
-
-  if (songsLocated != undefined) {
-    for (const song of songsLocated) {
-      console.log(song);
-      songsLibrary.value.set(song[0], song[1]);
-    }
-
-    console.log(songsLibrary);
-  }
-};
-
-const getURL = (data: string | undefined) => {
-  if (data != undefined) {
-    const frontCoverBlob = new Blob([base64ToUint8Array(data)], {
-      type: "image",
-    });
-    const frontCoverURL = URL.createObjectURL(frontCoverBlob);
-
-    return frontCoverURL;
-  }
-};
-
-const playSong = async (songPath: string) => {
-  console.log(`executing playSong()`);
-
-  const songBuffer = await window.MusicManager.getSong(songPath);
-  if (songBuffer != undefined) {
-    const songBlob = new Blob([songBuffer]);
-    actualSongURL.value = URL.createObjectURL(songBlob);
-
-    actualSongInfo.value = await window.MusicManager.getSongInfo(songBuffer);
-  }
-
-  actualSongFrontCoverURL.value = getURL(actualSongInfo.value?.frontCover);
-
-  const styles = document.styleSheets[0];
-  if (styles != null) {
-    const url = `url(${actualSongFrontCoverURL.value})`;
-    console.log(`updating ${styles} with the value ${url}`);
-
-    styles.insertRule(
-      `:root { --player-background-img: ${url}; }`,
-      styles.cssRules.length
-    );
-  }
-};
-
-const theme: Ref<"light" | "dark" | "system" | undefined> = inject(
+/* const theme: Ref<"light" | "dark" | "system" | undefined> = inject(
   "theme",
-  ref("system")
-);
+  ref("system"),
+) */
 
 watchEffect(() => {
   window.App.onFullScreen((_isFullScreen) => {
-    console.log(_isFullScreen);
+    logger.info(`fullscreen event has returned ${_isFullScreen}`)
 
-    isFullScreen.value = _isFullScreen;
-  });
-});
+    isFullScreen.value = _isFullScreen
+  })
+})
 
-provide("addMusicLibraryPath", addMusicLibraryPath);
-provide("removeMusicLibraryPath", removeMusicLibraryPath);
-provide("musicLibraryPaths", readonly(musicLibraryPaths));
-provide("updateSongs", updateSongs);
-provide("playSong", playSong);
-provide("actualSongURL", actualSongURL);
-provide("actualSongInfo", actualSongInfo);
-provide("actualSongFrontCoverURL", actualSongFrontCoverURL);
+onBeforeUnmount(() => {
+  logger.trace("clearing all before unmounting")
+  musicLibrary.clearAll()
+})
 
-/* WARNING: This maybe doesn't be used */
-provide("songsLibraryURL", songsUrlLibrary);
-provide("songsLibrary", songsLibrary);
+provide("musicLibrary", musicLibrary)
+provide("loadAndPlaySong", loadAndPlaySong)
+provide("isFullScreen", isFullScreen)
+provide("actualSong", actualSong)
+provide("actualDuration", actualDuration)
+provide("totalDuration", totalDuration)
+provide("isDragging", isDragging)
+provide("tempSliderValue", tempSliderValue)
+provide("playPauseSong", playPauseSong)
 </script>
 
 <template>
   <TitleBar v-if="!isFullScreen" />
-  <main v-if="isFullScreen" class="fullscreen">
-    <div class="fullscreen-content text-align:center">
-      <div class="flex flex:column align-items:center">
-        <img
-          v-if="actualSongInfo != undefined"
-          :src="getURL(actualSongInfo.frontCover)"
-          alt=""
-          class="aspect:1/1 r:2rem w:20rem shadow:2|2|10rem|2rem|rgba(0,0,0,0.7) margin-bottom:3rem"
-        />
+  <main v-if="isFullScreen" class="fullscreen cursor:none">
+    <div class="bg:rgba(0,0,0,0.377) h:100vh">
+      <div class="fullscreen-content text-align:center">
+        <div class="flex flex:column align-items:center">
+          <div
+            class="aspect:1/1 w:24.6rem flex r:3rem place-content:center align-items:center shadow:2|2|24rem|1rem|rgba(80,80,80,0.315) margin-bottom:3rem"
+          >
+            <div
+              class="aspect:1/1 overflow:hidden r:2.8rem w:24rem max-w:24rem flex place-content:center align-items:center"
+            >
+              <img
+                v-if="actualSong != undefined"
+                :src="actualSong.getFrontCoverURL()"
+                alt=""
+                class="object-fit:cover aspect:1/1 r:2.3rem w:24rem shadow:2|2|120rem|15rem|rgba(131,131,131,0.082)"
+              />
+            </div>
+          </div>
+        </div>
         <div class="">
-          <p class="f:medium f:26 text-shadow:0|0|60|rgba(255,255,255,1)">
-            {{ actualSongInfo?.title }}
+          <p
+            class="font-color:white opacity:0.8 f:medium f:26 text-shadow:0|0|30|rgba(255,255,255,0.3)"
+          >
+            {{ actualSong?.getMetadata()?.title }}
           </p>
-          <p class="f:medium f:22 text-shadow:0|0|60|rgba(255,255,255,1)">
-            {{ actualSongInfo?.album }}
+          <p
+            class="font-color:white opacity:0.6 f:medium f:22 text-shadow:0|0|30|rgba(255,255,255,0.4)"
+          >
+            {{ actualSong?.getMetadata()?.album }}
           </p>
-          <p class="f:medium f:20 text-shadow:0|0|60|rgba(255,255,255,1)">
-            {{ actualSongInfo?.artist }}
+          <p
+            class="font-color:white opacity:0.6 f:medium f:20 text-shadow:0|0|30|rgba(255,255,255,0.5)"
+          >
+            {{ actualSong?.getMetadata()?.artist }}
           </p>
+        </div>
+        <div class="w:40rem mt:3rem">
+          <ProgressBar />
         </div>
       </div>
     </div>
     <PlayerComponent />
   </main>
-  <main v-else class="not-fullscreen">
-    <Menu />
-    <div>
-      <RouterView />
+  <main
+    v-show="!isFullScreen"
+    class="relative height:100% padding-top:$(title-bar-height) max-w:100%"
+  >
+    <div class="flex flex:row pb:$(player-height) h:100% w:100%">
+      <div class="flex-basis:12%">
+        <Menu />
+      </div>
+      <div class="views">
+        <RouterView />
+      </div>
     </div>
-    <PlayerComponent />
+    <div
+      class="abs bottom:0 left:0 min-h:$(player-height) height:$(player-height) max-h:$(player-height)"
+    >
+      <PlayerComponent />
+    </div>
   </main>
 </template>
 
-<style>
-#app {
+<style scoped>
+.views {
+  flex-basis: 88%;
+  max-height: 100%;
 }
 
 .fullscreen {
@@ -181,19 +152,17 @@ provide("songsLibrary", songsLibrary);
   left: 0;
   width: 100%;
   height: 100%;
-  /* Color de fondo del seudoelemento */
-  mix-blend-mode: multiply; /* Modo de mezcla para crear el efecto de transparencia */
-  backdrop-filter: blur(50px);
+  mix-blend-mode: multiply;
+  backdrop-filter: blur(35px);
 }
 
 .fullscreen-content {
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
   position: absolute;
   align-items: center;
   place-content: center;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
 }
 </style>

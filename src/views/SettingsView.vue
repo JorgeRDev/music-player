@@ -4,7 +4,7 @@ import MusicLocationSetting from "../components/Settings/MusicLocationSetting.vu
 </script>
 
 <template>
-  <div class="view">
+  <div class="">
     <h1>Settings</h1>
     <ThemeSetting />
     <MusicLocationSetting />

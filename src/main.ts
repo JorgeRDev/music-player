@@ -1,6 +1,4 @@
-import { createApp, computed, ref, Ref, readonly, nextTick, watch } from "vue"
-import { ipcRenderer } from "electron/renderer"
-import { shell } from "electron/common"
+import { createApp, computed, ref, Ref, readonly } from "vue"
 import "@master/css"
 
 import "./assets/styles/styles.css"
