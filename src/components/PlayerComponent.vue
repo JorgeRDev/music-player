@@ -10,7 +10,7 @@ import {
   watchEffect,
 } from "vue"
 import ActualSong from "../lib/actualSong"
-import ProgressBar from "./musicplayer/ProgressBar.vue"
+import ProgressBar from "./controls/PlaybackPositionSlider.vue"
 import { formatTime } from "../lib/time"
 import pino, { Logger } from "pino"
 import { SliderAPI } from "vue-slider-component"

@@ -29,7 +29,7 @@ import { isDragging, tempSliderValue } from "./lib/progressBar"
 const logger: Logger<never, boolean> = pino({
   level: "silent",
 })
-import ProgressBar from "./components/musicplayer/ProgressBar.vue"
+import ProgressBar from "./components/controls/PlaybackPositionSlider.vue"
 
 onMounted(() => {
   logger.trace("App mounted")
