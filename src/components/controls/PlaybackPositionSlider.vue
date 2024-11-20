@@ -234,15 +234,16 @@ onUnmounted(() => {
   width: 10px;
   height: 10px;
   right: -6px;
-  top: 1.49px;
+  top: 1.45px;
 }
 
 .track-progress-handle {
   border-radius: 2rem;
   border: none;
-  background-color: var(--color-text);
+  background-color: var(--color-playback-control-slider-background);
   box-shadow: none;
   cursor: pointer;
+  scale: 0.5;
 }
 
 .track-progress-handle::before,
@@ -251,7 +252,7 @@ onUnmounted(() => {
 }
 
 .track-progress-connect {
-  background-color: var(--color-text);
+  background-color: var(--color-playback-control-slider-background);
   opacity: 0.6;
   height: 3px;
 }

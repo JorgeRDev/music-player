@@ -13,7 +13,7 @@ import ActualSong from "../lib/actualSong"
 import ProgressBar from "./controls/PlaybackPositionSlider.vue"
 import { formatTime } from "../lib/time"
 import pino, { Logger } from "pino"
-import { SliderAPI } from "vue-slider-component"
+import { API as SliderAPI } from "nouislider"
 import PlayButton from "./button/PlayButton.vue"
 import Lyrics from "./ui/Lyrics.vue"
 

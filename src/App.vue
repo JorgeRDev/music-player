@@ -130,7 +130,7 @@ provide("playPauseSong", playPauseSong)
   </main>
 </template>
 
-<style>
+<style scoped>
 .views {
   display: none;
 }

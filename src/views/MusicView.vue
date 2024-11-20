@@ -25,6 +25,10 @@ const songsLibrary: Ref<Map<string, SongInfo>> = inject(
 watch(musicLibrary.getSongsInfo(), (newVal) => {
   logger.info(`musicLibrary.getSongsInfo() has changed to ${newVal}`)
 })
+
+function prepareForPlay(songPath: string | null) {
+  // TODO: create a play button and start to preload the song
+}
 </script>
 
 <template>
@@ -46,7 +50,9 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
         <div class="songItem" v-for="song in musicLibrary.getSongsInfo()">
           <div
             class="aspect:1/1 w:3rem r:8px bg:rgba(0,0,0,0.479)"
+            @mouseenter="prepareForPlay(song[0])"
             @click="loadAndPlaySong(song[0])"
+            @mouseleave="prepareForPlay(null)"
           >
             <img
               v-if="song[1].getFrontCoverURL() != undefined"
@@ -96,7 +102,7 @@ watch(musicLibrary.getSongsInfo(), (newVal) => {
   scrollbar-width: thin;
   scrollbar-color: var(--color-text) transparent;
   overflow-x: hidden;
-  background-color: #fafafa;
+  background-color: var(--color-background-soft);
   border-radius: 1rem 0 0 0;
   padding: 1rem;
   overflow-y: hidden;

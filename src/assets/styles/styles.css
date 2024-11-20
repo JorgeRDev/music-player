@@ -2,6 +2,16 @@
 @import url("./base.css");
 @import url("./trackProgress.css");
 
+#app {
+  width: 100vw;
+  min-width: 80vw;
+  max-width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  background-color: var(--color-background);
+}
+
 .view {
   max-height: 80dvh;
 }
@@ -23,12 +33,6 @@ input {
   background-color: var(--vt-c-black-soft);
   color: var(--color-text);
   text-align: center;
-}
-
-.setting {
-  display: flex;
-  padding: 1rem;
-  background-color: #fdfdfd;
 }
 
 .title-bar-drag-region {
