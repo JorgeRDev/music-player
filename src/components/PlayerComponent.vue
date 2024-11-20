@@ -14,7 +14,7 @@ import ProgressBar from "./controls/PlaybackPositionSlider.vue"
 import { formatTime } from "../lib/time"
 import pino, { Logger } from "pino"
 import { API as SliderAPI } from "nouislider"
-import PlayButton from "./button/PlayButton.vue"
+import PlayPauseButton from "./button/PlayPauseButton.vue"
 import Lyrics from "./ui/Lyrics.vue"
 
 const logger: Logger<never, boolean> = pino({ level: "trace" })
@@ -122,7 +122,7 @@ watch(isDraggingComputed, () => {
         </div>
       </div>
       <div class="controls-container">
-        <PlayButton />
+        <PlayPauseButton />
       </div>
       <div class="settings-container">
         <Lyrics />

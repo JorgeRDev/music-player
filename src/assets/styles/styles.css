@@ -1,6 +1,7 @@
 @import "@master/normal.css";
 @import url("./base.css");
 @import url("./trackProgress.css");
+@import url("./design-system.css");
 
 #app {
   width: 100vw;

@@ -38,7 +38,7 @@ const chooseDirectories = async () => {
 
 <template>
   <div class="flex place-content:space-between">
-    <section class="f:20">Music library location</section>
+    <section>Music library location</section>
     <button
       @click="chooseDirectories()"
       class="bg:$(color-ui-background) bg:$(color-ui-background-hover):hover r:0.4rem p:0.5rem"

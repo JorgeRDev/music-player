@@ -115,7 +115,7 @@ provide("playPauseSong", playPauseSong)
     class="relative height:100% padding-top:$(title-bar-height) max-w:100%"
   >
     <div class="flex flex:row pb:$(player-height) h:100% w:100%">
-      <div class="flex-basis:12%">
+      <div class="flex-basis:30%">
         <Menu />
       </div>
       <div class="views">
