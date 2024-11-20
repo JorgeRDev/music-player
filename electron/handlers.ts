@@ -113,7 +113,11 @@ ipcMain.handle(
 
 ipcMain.handle(
   "getSongMetadata",
-  async (event, songPath: SongPath): Promise<SongMetadata | null> => {
+  async (
+    event,
+    songPath: SongPath,
+    options?: { compressImage: boolean },
+  ): Promise<SongMetadata | null> => {
     logger.info(`executing getSongMetadata(${songPath})`)
 
     let nodeStream
@@ -180,9 +184,15 @@ ipcMain.handle(
       }
       _songMetadata.album = songMetadata.common.album
       if (songMetadata.common.picture != undefined) {
-        _songMetadata.frontCover = uint8ArrayToBase64(
-          songMetadata.common.picture[0].data,
-        )
+        if (options?.compressImage) {
+          _songMetadata.frontCover = uint8ArrayToBase64(
+            songMetadata.common.picture[0].data,
+          )
+        } else {
+          _songMetadata.frontCover = uint8ArrayToBase64(
+            songMetadata.common.picture[0].data,
+          )
+        }
       }
       _songMetadata.year = songMetadata.common.year
       _songMetadata.artist = songMetadata.common.artist

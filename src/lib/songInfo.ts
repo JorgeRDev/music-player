@@ -11,7 +11,7 @@ class SongInfo extends Song {
   }
 
   async init() {
-    await this.getMetadataFromSongPath()
+    await this.getMetadataFromSongPath({ compressImage: true })
     await this.createFrontCoverBlob()
     await this.createFrontCoverURL()
   }

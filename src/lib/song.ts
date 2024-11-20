@@ -75,7 +75,7 @@ export default class Song {
     this.url = URL.createObjectURL(this.blob)
   }
 
-  async getMetadataFromSongPath() {
+  async getMetadataFromSongPath(options?: { compressImage: boolean }) {
     logger.info(`executing getMetadataFromSongPath()`)
     logger.trace(`getting metadata from song path`)
 
@@ -85,7 +85,16 @@ export default class Song {
       )
     }
 
-    this.songMetadata = await window.MusicManager.getSongMetadata(this.songPath)
+    if (options?.compressImage) {
+      this.songMetadata = await window.MusicManager.getSongMetadata(
+        this.songPath,
+        { compressImage: true },
+      )
+    } else {
+      this.songMetadata = await window.MusicManager.getSongMetadata(
+        this.songPath,
+      )
+    }
 
     this.setTotalDuration(this.songMetadata?.duration ?? 0)
   }

@@ -30,9 +30,12 @@ contextBridge.exposeInMainWorld("MusicManager", {
 
     return ipcRenderer.invoke("getSongBuffer", songPath)
   },
-  getSongMetadata: async (songPath: SongPath): Promise<SongInfo | null> => {
+  getSongMetadata: async (
+    songPath: SongPath,
+    options?: { compressImage: boolean },
+  ): Promise<SongInfo | null> => {
     console.info(`executing getSongMetadata(${songPath}) from preload`)
-    return ipcRenderer.invoke("getSongMetadata", songPath)
+    return ipcRenderer.invoke("getSongMetadata", songPath, options)
   },
 })
 

@@ -113,8 +113,9 @@ function prepareForPlay(songPath: string | null) {
   flex-direction: column;
   gap: 0.5rem;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: scroll;
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
   scrollbar-width: thin;
   scrollbar-color: var(--color-text) transparent;
 }
@@ -124,6 +125,7 @@ function prepareForPlay(songPath: string | null) {
   height: 4rem;
   min-height: 4rem;
   width: 100%;
+  scroll-snap-align: start;
   display: grid;
   grid-template-columns: 3rem 1fr 1fr 3.5rem;
   border-radius: 1rem;
