@@ -30,7 +30,7 @@ const logger: Logger<never, boolean> = pino({
   level: "silent",
 })
 import ProgressBar from "./components/controls/PlaybackPositionSlider.vue"
-
+import Lyrics from "./components/ui/Lyrics.vue"
 onMounted(() => {
   logger.trace("App mounted")
 })
@@ -68,19 +68,19 @@ provide("playPauseSong", playPauseSong)
   <TitleBar v-if="!isFullScreen" />
   <main v-if="isFullScreen" class="fullscreen cursor:none">
     <div class="bg:rgba(0,0,0,0.377) h:100vh">
-      <div class="fullscreen-content text-align:center">
+      <div class="fullscreen-content text-align:center gap:3rem mt:1.5rem">
         <div class="flex flex:column align-items:center">
           <div
-            class="aspect:1/1 w:24.6rem flex r:3rem place-content:center align-items:center shadow:2|2|24rem|1rem|rgba(80,80,80,0.315) margin-bottom:3rem"
+            class="aspect:1/1 h:24.6rem flex r:3rem place-content:center align-items:center shadow:0|0|20rem|10rem|rgba(0,0,0,0.151)"
           >
             <div
-              class="aspect:1/1 overflow:hidden r:2.8rem w:24rem max-w:24rem flex place-content:center align-items:center"
+              class="aspect:1/1 overflow:hidden r:2.8rem h:24rem flex place-content:center align-items:center"
             >
               <img
                 v-if="actualSong != undefined"
                 :src="actualSong.getFrontCoverURL()"
                 alt=""
-                class="object-fit:cover aspect:1/1 r:2.3rem w:24rem shadow:2|2|120rem|15rem|rgba(131,131,131,0.082)"
+                class="object-fit:cover aspect:1/1 r:2.3rem h:24rem shadow:2|2|120rem|15rem|rgba(131,131,131,0.082)"
               />
             </div>
           </div>
@@ -102,9 +102,10 @@ provide("playPauseSong", playPauseSong)
             {{ actualSong?.getMetadata()?.artist }}
           </p>
         </div>
-        <div class="w:40rem mt:3rem">
+        <div class="w:40rem">
           <ProgressBar />
         </div>
+        <Lyrics class="f:white" />
       </div>
     </div>
     <PlayerComponent />
@@ -131,8 +132,15 @@ provide("playPauseSong", playPauseSong)
 
 <style scoped>
 .views {
-  flex-basis: 88%;
-  max-height: 100%;
+  display: none;
+}
+
+@media (min-height: 175px) {
+  .views {
+    display: block;
+    flex-basis: 88%;
+    max-height: 100%;
+  }
 }
 
 .fullscreen {

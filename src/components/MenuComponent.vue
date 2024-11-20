@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex:column px:0.5rem overflow-x:hidden">
+  <div class="menu">
     <RouterLink to="/" class="menu-link">
       <div class="aspect:1/1 bg:rgba(107,106,109,0.247) h:1rem"></div>
       <span>Music Library</span>
@@ -16,6 +16,19 @@
 </template>
 
 <style>
+.menu {
+  display: none;
+}
+
+@media (min-height: 175px) {
+  .menu {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0;
+    overflow-x: hidden;
+  }
+}
+
 .menu-link {
   display: flex;
   flex-direction: row;

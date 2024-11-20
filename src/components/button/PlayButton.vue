@@ -7,7 +7,7 @@ const playPauseSong = inject("playPauseSong", () => {})
 
 <template>
   <button
-    class="rel aspect:1/1 h:4rem bg:rgba(107,106,109,0.226) cursor:pointer round"
+    class="rel aspect:1/1 h:4rem bg:$(color-ui-background) bg:$(color-ui-background-hover):hover cursor:pointer round"
     @click="playPauseSong"
   >
     <div class="abs top:51% left:53% transform:translate(-50%,-50%)">
