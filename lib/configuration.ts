@@ -50,32 +50,16 @@ async function readConfiguration(): Promise<Configuration> {
 }
 
 async function writeConfiguration(configuration: Configuration): Promise<void> {
-  const configurationFilePathExists: boolean = await fsPromise
-    .access(configurationFilePath)
-    .then(() => true)
-    .catch(() => false)
-
   try {
-    let configurationFileContentObject: Configuration = defaultConfiguration
+    let configurationFileContentObject: Configuration =
+      await readConfiguration()
 
-    if (configurationFilePathExists) {
-      const configurationFileContent: string = await fsPromise.readFile(
-        configurationFilePath,
-        "utf-8",
-      )
-
-      let configurationFileContentObject: Configuration = JSON.parse(
-        configurationFileContent,
-      )
-
+    if (configuration.directories) {
       configurationFileContentObject.directories = configuration.directories
+    }
 
-      await fsPromise.writeFile(
-        configurationFilePath,
-        JSON.stringify(configurationFileContentObject),
-      )
-    } else {
-      configurationFileContentObject.directories = configuration.directories
+    if (configuration.theme) {
+      configurationFileContentObject.theme = configuration.theme
     }
 
     await fsPromise.writeFile(
