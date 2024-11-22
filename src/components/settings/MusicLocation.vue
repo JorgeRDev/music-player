@@ -7,13 +7,13 @@ const logger: Logger<never, boolean> = pino({ level: "silent" })
 
 const musicLibrary: MusicLibrary = inject("musicLibrary") as MusicLibrary
 
-const chooseDirectories = async () => {
+const openDirectoriesSelectDialog = async () => {
   logger.info(`executing chooseDirectories()`)
 
   logger.info(`user is choosing directories`)
 
   const directories: string[] | null =
-    await window.FileSystem.chooseDirectories()
+    await window.App.FileSystem.openDirectoriesSelectDialog()
 
   logger.info(`chooseDirectories() has received ${directories}`)
 
@@ -40,7 +40,7 @@ const chooseDirectories = async () => {
   <div class="flex place-content:space-between">
     <section>Music library location</section>
     <button
-      @click="chooseDirectories()"
+      @click="openDirectoriesSelectDialog()"
       class="bg:$(color-ui-background) bg:$(color-ui-background-hover):hover r:0.4rem p:0.5rem"
     >
       Add folder

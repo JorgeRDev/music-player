@@ -37,7 +37,7 @@ export default class Song {
     let _buffer: Buffer | undefined
 
     try {
-      _buffer = await window.MusicManager.getSongBuffer(this.songPath)
+      _buffer = await window.App.MusicManager.getSongBuffer(this.songPath)
     } catch (err) {
       throw err
     }
@@ -86,12 +86,12 @@ export default class Song {
     }
 
     if (options?.compressImage) {
-      this.songMetadata = await window.MusicManager.getSongMetadata(
+      this.songMetadata = await window.App.MusicManager.getSongMetadata(
         this.songPath,
         { compressImage: true },
       )
     } else {
-      this.songMetadata = await window.MusicManager.getSongMetadata(
+      this.songMetadata = await window.App.MusicManager.getSongMetadata(
         this.songPath,
       )
     }

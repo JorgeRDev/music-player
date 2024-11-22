@@ -1,8 +1,11 @@
-import { join } from "path"
-import { readdir } from "fs/promises"
-import { extname } from "path"
 import { inspect } from "util"
+import { app } from "electron"
 import pino from "pino"
+import readDirRecursively from "./lib/readingDirectory"
+import path from "path"
+import fsPromise from "fs/promises"
+import { PathLike } from "original-fs"
+import { Configuration } from "./lib/configuration"
 
 const logger = pino({ level: "info" })
 
@@ -10,45 +13,59 @@ async function getSongsPathFromDirectories(
   event: Electron.IpcMainInvokeEvent,
   directories: string[],
 ) {
-  logger.info(`executing getSongsPathFromDirectories(${directories}) handler`)
+  try {
+    logger.info(`executing getSongsPathFromDirectories(${directories}) handler`)
 
-  async function readDirRecursively(dir: string): Promise<string[]> {
-    const files: string[] = []
-
-    async function readDirInnerRecursively(dir: string): Promise<void> {
-      const entries = await readdir(dir, { withFileTypes: true })
-
-      for (const entry of entries) {
-        const fullPath = join(dir, entry.name)
-
-        if (entry.isDirectory()) {
-          await readDirInnerRecursively(fullPath)
-        } else {
-          if (
-            extname(entry.name) === ".flac" ||
-            extname(entry.name) === ".mp3"
-          ) {
-            files.push(fullPath)
-          }
-        }
+    for (const directory of directories) {
+      logger.trace(
+        `executing readDirRecursively(${directory}) of ${directories}`,
+      )
+      const filesPath = await readDirRecursively(directory)
+      logger.trace(
+        `readDirRecursively(${directory}) has returned:\n\t${inspect(filesPath, { breakLength: Infinity, maxArrayLength: 2, maxStringLength: 50 })}`,
+      )
+      logger.info(
+        `emitting getSongsPathFromDirectories-reply event with the filesPath`,
+      )
+      for (const filePath of filesPath) {
+        event.sender.send("getSongsPathFromDirectories-reply", filePath)
       }
     }
-    await readDirInnerRecursively(dir)
-    return files
+  } catch (error) {
+    throw error
   }
+}
 
-  for (const directory of directories) {
-    logger.trace(`executing readDirRecursively(${directory}) of ${directories}`)
-    const filesPath = await readDirRecursively(directory)
-    logger.trace(
-      `readDirRecursively(${directory}) has returned:\n\t${inspect(filesPath, { breakLength: Infinity, maxArrayLength: 2, maxStringLength: 50 })}`,
+async function saveConfiguration(
+  event: Electron.IpcMainInvokeEvent,
+  configuration: Configuration,
+) {
+  try {
+    const userAppDataPath: PathLike = app.getPath("appData")
+    const configurationFilePath: PathLike = path.join(
+      userAppDataPath,
+      "configuration.json",
     )
-    logger.info(
-      `emitting getSongsPathFromDirectories-reply event with the filesPath`,
-    )
-    for (const filePath of filesPath) {
-      event.sender.send("getSongsPathFromDirectories-reply", filePath)
+    const configurationFilePathExists: boolean = await fsPromise
+      .access(configurationFilePath)
+      .then(() => true)
+      .catch(() => false)
+
+    let configurationFileContent: string
+
+    if (configurationFilePathExists) {
+      configurationFileContent = await fsPromise.readFile(
+        configurationFilePath,
+        "utf-8",
+      )
+    } else {
+      await fsPromise.writeFile(
+        configurationFilePath,
+        JSON.stringify(configuration),
+      )
     }
+  } catch (error) {
+    throw error
   }
 }
 

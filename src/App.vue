@@ -32,7 +32,9 @@ const logger: Logger<never, boolean> = pino({
 import ProgressBar from "./components/controls/PlaybackPositionSlider.vue"
 import Lyrics from "./components/ui/Lyrics.vue"
 onMounted(() => {
-  logger.trace("App mounted")
+  logger.info("App mounted")
+
+  window.App.Configuration.readConfiguration()
 })
 
 /* const theme: Ref<"light" | "dark" | "system" | undefined> = inject(
@@ -41,7 +43,7 @@ onMounted(() => {
 ) */
 
 watchEffect(() => {
-  window.App.onFullScreen((_isFullScreen) => {
+  window.App.FullScreen.onFullScreen((_isFullScreen) => {
     logger.info(`fullscreen event has returned ${_isFullScreen}`)
 
     isFullScreen.value = _isFullScreen

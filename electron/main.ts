@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, nativeTheme } from "electron"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import {
-  chooseDirectories,
+  openDirectoriesSelectDialog,
   getSongMetadata,
   getSongBuffer,
 } from "./handlers.ts"
@@ -93,8 +93,8 @@ function createWindow() {
 }
 
 ipcMain.handle(
-  "chooseDirectories",
-  async (): Promise<string[] | null> => await chooseDirectories(),
+  "openDirectoriesSelectDialog",
+  async (): Promise<string[] | null> => await openDirectoriesSelectDialog(),
 )
 
 ipcMain.handle("getSongMetadata", async (event, songPath: SongPath) => {

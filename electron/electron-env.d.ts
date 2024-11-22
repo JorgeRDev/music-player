@@ -26,24 +26,26 @@ declare namespace NodeJS {
 // Used in Renderer process, expose in `preload.ts`
 declare global {
   interface Window {
-    FileSystem: {
-      chooseDirectories: () => Promise<string[] | null>
-    }
-    MusicManager: {
-      getSongsPathFromDirectories: (
-        directories: string[],
-        onSongPath: (songPath: string) => void,
-      ) => void
-      getSongMetadata: (
-        songPath: SongPath,
-        options?: { compressImage: boolean },
-      ) => Promise<SongInfo | null>
-      getSongBuffer: (
-        songPath: SongPath | undefined,
-      ) => Promise<Buffer | undefined>
-    }
     App: {
-      onFullScreen: (callback: (arg: boolean) => void) => void
+      FileSystem: {
+        openDirectoriesSelectDialog: () => Promise<string[] | null>
+      }
+      MusicManager: {
+        getSongsPathFromDirectories: (
+          directories: string[],
+          onSongPath: (songPath: string) => void,
+        ) => void
+        getSongMetadata: (
+          songPath: SongPath,
+          options?: { compressImage: boolean },
+        ) => Promise<SongInfo | null>
+        getSongBuffer: (
+          songPath: SongPath | undefined,
+        ) => Promise<Buffer | undefined>
+      }
+      FullScreen: {
+        onFullScreen: (callback: (arg: boolean) => void) => void
+      }
     }
   }
 }

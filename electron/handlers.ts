@@ -12,7 +12,7 @@ import { basename } from "node:path"
 
 const logger = pino({ level: "info" })
 
-async function chooseDirectories(): Promise<string[] | null> {
+async function openDirectoriesSelectDialog(): Promise<string[] | null> {
   try {
     logger.info("Executing chooseDirectories() handler")
 
@@ -150,4 +150,4 @@ async function getSongMetadata(
   return null
 }
 
-export { chooseDirectories, getSongMetadata, getSongBuffer }
+export { openDirectoriesSelectDialog, getSongMetadata, getSongBuffer }

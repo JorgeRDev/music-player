@@ -39,7 +39,7 @@ class MusicLibrary {
     logger.info(`musicLibraryPaths has ${this.musicLibraryPaths.value}`)
     for (const path of this.musicLibraryPaths.value) {
       logger.info(`getting songs path from ${path}`)
-      await window.MusicManager.getSongsPathFromDirectories(
+      await window.App.MusicManager.getSongsPathFromDirectories(
         [path],
         (_songPath: string) => {
           logger.info(`getSongsPathFromDirectories() has recieved ${_songPath}`)
