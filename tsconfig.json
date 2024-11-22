@@ -21,6 +21,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "electron", "types"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "electron", "types", "lib/configuration.ts", "lib/readingDirectory.ts", "lib/songMetadata.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

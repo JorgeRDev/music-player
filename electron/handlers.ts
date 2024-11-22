@@ -3,14 +3,14 @@ import { readFile } from "node:fs/promises"
 import { extname } from "node:path"
 import { parseWebStream } from "music-metadata"
 import { uint8ArrayToBase64 } from "uint8array-extras"
-import SongMetadata from "./lib/songMetadata"
+import SongMetadata from "../lib/songMetadata"
 import { createReadStream } from "fs"
 import { ReadableStream } from "stream/web"
 import { inspect } from "util"
 import pino from "pino"
 import { basename } from "node:path"
 
-const logger = pino({ level: "info" })
+const logger = pino({ level: "silent" })
 
 async function openDirectoriesSelectDialog(): Promise<string[] | null> {
   try {

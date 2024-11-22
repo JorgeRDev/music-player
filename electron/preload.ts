@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron"
 import { SongInfo } from "../src/lib/songInfo"
+import { Configuration } from "../lib/configuration"
 
 contextBridge.exposeInMainWorld("App", {
   FileSystem: {
@@ -11,16 +12,11 @@ contextBridge.exposeInMainWorld("App", {
       directories: string[],
       onSongPath: (songPath: string) => void,
     ) => {
-      console.log(`executing getSongsPathFromDirectories(${directories})`)
       ipcRenderer.send("getSongsPathFromDirectories", directories)
 
       ipcRenderer.on(
         "getSongsPathFromDirectories-reply",
         (_event, songPath) => {
-          console.log(
-            `getSongsPathFromDirectories-reply has recieved ${songPath}`,
-          )
-
           onSongPath(songPath)
         },
       )
@@ -28,7 +24,6 @@ contextBridge.exposeInMainWorld("App", {
     getSongBuffer: async (
       songPath: SongPath | undefined,
     ): Promise<Buffer | undefined> => {
-      console.log(`executing getSongBuffer(${songPath})`)
       if (songPath == undefined) {
         throw new Error("Song path is undefined")
       }
@@ -39,14 +34,11 @@ contextBridge.exposeInMainWorld("App", {
       songPath: SongPath,
       options?: { compressImage: boolean },
     ): Promise<SongInfo | null> => {
-      console.info(`executing getSongMetadata(${songPath}) from preload`)
       return ipcRenderer.invoke("getSongMetadata", songPath, options)
     },
   },
   FullScreen: {
     onFullScreen: (callback: (arg: boolean) => boolean) => {
-      console.trace(`onFullscreen() se esta ejecutando desde preload.js`)
-
       ipcRenderer.on("is-app-full-screen", (event, isFullScreen: boolean) => {
         if (isFullScreen) {
           console.log("La aplicación está en pantalla completa")
@@ -55,6 +47,11 @@ contextBridge.exposeInMainWorld("App", {
         }
         callback(isFullScreen)
       })
+    },
+  },
+  Configuration: {
+    readConfiguration: async (): Promise<Configuration> => {
+      return ipcRenderer.invoke("readConfiguration")
     },
   },
 })

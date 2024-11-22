@@ -26,15 +26,28 @@ import {
 import { isFullScreen } from "./lib/fullscreen"
 import pino, { Logger } from "pino"
 import { isDragging, tempSliderValue } from "./lib/progressBar"
+import { Configuration } from "../lib/configuration"
+
 const logger: Logger<never, boolean> = pino({
   level: "silent",
 })
 import ProgressBar from "./components/controls/PlaybackPositionSlider.vue"
 import Lyrics from "./components/ui/Lyrics.vue"
-onMounted(() => {
+onMounted(async () => {
   logger.info("App mounted")
 
-  window.App.Configuration.readConfiguration()
+  const configuration: Configuration =
+    await window.App.Configuration.readConfiguration()
+
+  for (const directory of configuration.directories) {
+    console.log(directory)
+
+    musicLibrary.addMusicLibraryPath(directory)
+  }
+  console.log(configuration)
+
+  await musicLibrary.createSongsPathFromPaths()
+  await musicLibrary.createSongsMetadataFromPaths()
 })
 
 /* const theme: Ref<"light" | "dark" | "system" | undefined> = inject(

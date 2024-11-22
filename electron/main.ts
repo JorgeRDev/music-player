@@ -7,6 +7,7 @@ import {
   getSongBuffer,
 } from "./handlers.ts"
 import { getSongsPathFromDirectories } from "./listeners.ts"
+import { readConfiguration } from "../lib/configuration"
 
 let win: BrowserWindow | null
 
@@ -103,6 +104,10 @@ ipcMain.handle("getSongMetadata", async (event, songPath: SongPath) => {
 
 ipcMain.handle("getSongBuffer", async (event, songPath: SongPath) => {
   return await getSongBuffer(songPath)
+})
+
+ipcMain.handle("readConfiguration", async () => {
+  return await readConfiguration()
 })
 
 ipcMain.on(

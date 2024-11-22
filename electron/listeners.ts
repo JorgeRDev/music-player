@@ -1,13 +1,13 @@
 import { inspect } from "util"
 import { app } from "electron"
 import pino from "pino"
-import readDirRecursively from "./lib/readingDirectory"
+import readDirRecursively from "../lib/readingDirectory"
 import path from "path"
 import fsPromise from "fs/promises"
 import { PathLike } from "original-fs"
-import { Configuration } from "./lib/configuration"
+import { Configuration } from "../lib/configuration"
 
-const logger = pino({ level: "info" })
+const logger = pino({ level: "silent" })
 
 async function getSongsPathFromDirectories(
   event: Electron.IpcMainInvokeEvent,
@@ -54,6 +54,10 @@ async function saveConfiguration(
     let configurationFileContent: string
 
     if (configurationFilePathExists) {
+      await fsPromise.mkdir(path.dirname(configurationFilePath), {
+        recursive: true,
+      })
+
       configurationFileContent = await fsPromise.readFile(
         configurationFilePath,
         "utf-8",

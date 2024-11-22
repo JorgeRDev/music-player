@@ -46,6 +46,9 @@ declare global {
       FullScreen: {
         onFullScreen: (callback: (arg: boolean) => void) => void
       }
+      Configuration: {
+        readConfiguration: () => Promise<Configuration>
+      }
     }
   }
 }

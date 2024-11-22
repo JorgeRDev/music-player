@@ -5,7 +5,7 @@ import fsPromise from "fs/promises"
 const userAppDataPath: PathLike = app.getPath("appData")
 const configurationFilePath: PathLike = path.join(
   userAppDataPath,
-  "configuration.json",
+  `/temp/configuration.json`,
 )
 
 export interface Configuration {
@@ -20,25 +20,43 @@ const defaultConfiguration: Configuration = {
 
 async function readConfiguration(): Promise<Configuration> {
   try {
+    console.log(configurationFilePath)
+
+    const configurationFilePathExists: boolean = await fsPromise
+      .access(configurationFilePath)
+      .then(() => true)
+      .catch(() => false)
+
+    if (!configurationFilePathExists) {
+      await fsPromise.writeFile(
+        configurationFilePath,
+        JSON.stringify(defaultConfiguration),
+      )
+    }
+
     const configurationFileContent: string = await fsPromise.readFile(
       configurationFilePath,
       "utf-8",
     )
 
-    return JSON.parse(configurationFileContent)
+    let configurationFileContentObject: Configuration = JSON.parse(
+      configurationFileContent,
+    )
+
+    return configurationFileContentObject
   } catch (error) {
     throw error
   }
 }
 
 async function writeConfiguration(configuration: Configuration): Promise<void> {
+  const configurationFilePathExists: boolean = await fsPromise
+    .access(configurationFilePath)
+    .then(() => true)
+    .catch(() => false)
+
   try {
     let configurationFileContentObject: Configuration = defaultConfiguration
-
-    const configurationFilePathExists: boolean = await fsPromise
-      .access(configurationFilePath)
-      .then(() => true)
-      .catch(() => false)
 
     if (configurationFilePathExists) {
       const configurationFileContent: string = await fsPromise.readFile(
