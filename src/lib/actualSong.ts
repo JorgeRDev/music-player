@@ -2,12 +2,14 @@ import { SongInfo } from "./songInfo"
 import { Howl } from "howler"
 import pino, { Logger } from "pino"
 import Song from "./song"
+import SongLyrics from "../../lib/lyrics"
 
 const logger: Logger<never, boolean> = pino({ level: "silent" })
 
-export default class actualSong extends Song {
+export default class ActualSong extends Song {
   song: Howl | undefined
   actualDuration: number | undefined
+  lyrics: SongLyric[] | undefined = SongLyrics
 
   getActualDuration(): number | undefined {
     if (this.song === undefined) {
