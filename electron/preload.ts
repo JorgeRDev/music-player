@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron"
 import { SongInfo } from "../src/lib/songInfo"
 import { Configuration } from "../lib/configuration"
+import { getLyrics } from "./listeners"
 
 contextBridge.exposeInMainWorld("App", {
   FileSystem: {
@@ -35,6 +36,16 @@ contextBridge.exposeInMainWorld("App", {
       options?: { compressImage: boolean },
     ): Promise<SongInfo | null> => {
       return ipcRenderer.invoke("getSongMetadata", songPath, options)
+    },
+    getLyrics: async (
+      songPath: SongPath,
+      onGetLyrics: (songLyrics: string) => void,
+    ) => {
+      ipcRenderer.send("getLyrics", songPath)
+
+      ipcRenderer.on("getLyrics-reply", (_event, lyricsContent) => {
+        onGetLyrics(lyricsContent)
+      })
     },
   },
   FullScreen: {

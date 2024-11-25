@@ -19,7 +19,7 @@ import pino from "pino"
 import { slider, isDragging } from "../../lib/playbackPositionSlider"
 
 const logger = pino({
-  level: "trace",
+  level: "silent",
 })
 
 const isFullScreen: Ref<boolean> = inject("isFullScreen", ref(false))

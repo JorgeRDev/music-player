@@ -2,13 +2,15 @@
 import { Ref, ref, computed, inject, ComputedRef, watch } from "vue"
 import ActualSong from "../../lib/actualSong"
 import { formatTimeToSeconds } from "../../../lib/time"
+import pino, { Logger } from "pino"
 
+const logger: Logger<never, boolean> = pino({ level: "silent" })
 const actualSong: Ref<ActualSong> = inject("actualSong", ref(new ActualSong()))
 
 const lyrics: Ref<SongLyric[]> = computed(() => {
   actualSong.value.lyrics?.forEach((lyric) => {
     lyric.timeInSeconds = formatTimeToSeconds(lyric.time)
-    console.log(lyric.timeInSeconds)
+    logger.trace(lyric.timeInSeconds)
   })
   return actualSong.value.lyrics ?? []
 })
@@ -97,7 +99,7 @@ watch(previousLyricsLength, () => {
       <Transition
         v-if="transitionsEnabled"
         name="nextPlaying"
-        :duration="{ enter: 200, leave: 500 }"
+        :duration="{ enter: 200, leave: 300 }"
       >
         <p :key="transitionKey" class="nextPlaying-element">
           {{ nextLyricToPlay }}
@@ -131,7 +133,7 @@ watch(previousLyricsLength, () => {
 }
 
 .lyricPlaying-enter-active {
-  transition: opacity 2s step-end;
+  transition: opacity 0.3s step-end;
 }
 
 .lyricPlaying-enter-from {
@@ -153,7 +155,7 @@ watch(previousLyricsLength, () => {
   opacity: 1;
 }
 .lyricPlaying-leave-to {
-  top: 10%;
+  top: 0%;
   opacity: 0;
   font-size: 10px;
 }
@@ -182,8 +184,8 @@ watch(previousLyricsLength, () => {
 
 .nextPlaying-leave-active {
   transition:
-    font-size 0.5s ease-in-out,
-    top 0.5s ease-in-out;
+    font-size 0.3s linear,
+    top 0.3s linear;
 }
 
 .nextPlaying-leave-from {

@@ -5,7 +5,7 @@ import { inject, computed, ComputedRef } from "vue"
 import pino, { Logger } from "pino"
 import ActualSong from "./actualSong"
 
-const logger: Logger<never, boolean> = pino({ level: "debug" })
+const logger: Logger<never, boolean> = pino({ level: "silent" })
 
 const actualSong: Ref<ActualSong> = ref(new ActualSong())
 
@@ -29,12 +29,14 @@ async function loadAndPlaySong(songPath: SongPath) {
   logger.info(`executing loadAndPlaySong(${songPath})`)
 
   await actualSong.value.loadSong(songPath)
+  logger.trace(`loading lyrics`)
+  await actualSong.value.loadLyrics()
   await actualSong.value.play()
 
   const styles = document.styleSheets[0]
   if (styles != null) {
     const url = `url(${actualSong.value.getFrontCoverURL()})`
-    console.log(`updating ${styles} with the value ${url}`)
+    logger.trace(`updating ${styles} with the value ${url}`)
 
     styles.insertRule(
       `:root { --player-background-img: ${url}; }`,

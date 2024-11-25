@@ -40,11 +40,8 @@ onMounted(async () => {
     await window.App.Configuration.readConfiguration()
 
   for (const directory of configuration.directories) {
-    console.log(directory)
-
     musicLibrary.addMusicLibraryPath(directory)
   }
-  console.log(configuration)
 
   await musicLibrary.createSongsPathFromPaths()
   await musicLibrary.createSongsMetadataFromPaths()

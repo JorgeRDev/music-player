@@ -6,7 +6,7 @@ import {
   getSongMetadata,
   getSongBuffer,
 } from "./handlers.ts"
-import { getSongsPathFromDirectories } from "./listeners.ts"
+import { getSongsPathFromDirectories, getLyrics } from "./listeners.ts"
 import { readConfiguration } from "../lib/configuration"
 
 let win: BrowserWindow | null
@@ -114,6 +114,12 @@ ipcMain.on(
   "getSongsPathFromDirectories",
   async (event: Electron.IpcMainInvokeEvent, directories: string[]) =>
     await getSongsPathFromDirectories(event, directories),
+)
+
+ipcMain.on(
+  "getLyrics",
+  async (event: Electron.IpcMainInvokeEvent, songPath: SongPath) =>
+    await getLyrics(event, songPath),
 )
 
 // Quit when all windows are closed, except on macOS. There, it's common

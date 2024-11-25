@@ -1,5 +1,5 @@
 import { inspect } from "util"
-import { app } from "electron"
+import { app, ipcMain } from "electron"
 import pino from "pino"
 import readDirRecursively from "../lib/readingDirectory"
 import path from "path"
@@ -7,7 +7,7 @@ import fsPromise from "fs/promises"
 import { PathLike } from "original-fs"
 import { Configuration } from "../lib/configuration"
 
-const logger = pino({ level: "silent" })
+const logger = pino({ level: "trace" })
 
 async function getSongsPathFromDirectories(
   event: Electron.IpcMainInvokeEvent,
@@ -31,6 +31,32 @@ async function getSongsPathFromDirectories(
         event.sender.send("getSongsPathFromDirectories-reply", filePath)
       }
     }
+  } catch (error) {
+    throw error
+  }
+}
+
+async function getLyrics(event: Electron.IpcMainInvokeEvent, songPath: string) {
+  try {
+    logger.info(`executing getLyrics(${songPath})`)
+
+    logger.trace(`getting lyricsDir`)
+    const lyricsDir = path.dirname(songPath)
+    logger.trace(`lyricsDir: ${lyricsDir}`)
+
+    logger.trace(`getting lyricsFile`)
+    const lyricsFile = `${path.basename(songPath, path.extname(songPath))}.lrc`
+    logger.trace(`lyricsFile: ${lyricsFile}`)
+
+    logger.trace(`getting lyricsPath`)
+    const lyricsPath = path.join(lyricsDir, lyricsFile)
+    logger.trace(`lyricsPath: ${lyricsPath}`)
+
+    const lyricsContent = await fsPromise.readFile(lyricsPath, "utf-8")
+    logger.trace(lyricsContent)
+
+    event.sender.send("getLyrics-reply", lyricsContent)
+    ipcMain.removeListener("getLyrics", getLyrics)
   } catch (error) {
     throw error
   }
@@ -73,4 +99,4 @@ async function saveConfiguration(
   }
 }
 
-export { getSongsPathFromDirectories }
+export { getSongsPathFromDirectories, getLyrics }

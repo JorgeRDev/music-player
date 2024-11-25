@@ -42,6 +42,10 @@ declare global {
         getSongBuffer: (
           songPath: SongPath | undefined,
         ) => Promise<Buffer | undefined>
+        getLyrics: (
+          songPath: SongPath,
+          onGetLyrics: (songLyrics: string) => void,
+        ) => void
       }
       FullScreen: {
         onFullScreen: (callback: (arg: boolean) => void) => void
