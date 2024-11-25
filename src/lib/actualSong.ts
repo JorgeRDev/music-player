@@ -10,6 +10,7 @@ export default class ActualSong extends Song {
   song: Howl | undefined
   actualDuration: number | undefined
   lyrics: SongLyric[] | undefined = SongLyrics
+  userChangedDuration: boolean = false
 
   getActualDuration(): number | undefined {
     if (this.song === undefined) {
@@ -59,7 +60,7 @@ export default class ActualSong extends Song {
       onplay: () => {
         setInterval(() => {
           this.actualDuration = this.song?.seek()
-        }, 1000)
+        }, 100)
       },
     })
 
@@ -125,5 +126,9 @@ export default class ActualSong extends Song {
       this.song.unload()
       this.song = undefined
     }
+  }
+
+  setUserChangedDuration(value: boolean) {
+    this.userChangedDuration = value
   }
 }

@@ -19,5 +19,6 @@ declare interface SongLyric {
     second: number
     millisecond: number
   }
+  timeInSeconds?: number
   lyric: string
 }

@@ -1,4 +1,4 @@
-function formatTime(seconds: number): string {
+function formatSecondsToTimeString(seconds: number): string {
   if (!seconds) return "00:00:00"
 
   const hours = Math.floor(seconds / 3600)
@@ -12,4 +12,12 @@ function formatTime(seconds: number): string {
   return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`
 }
 
-export { formatTime }
+function formatTimeToSeconds(time: {
+  minute: number
+  second: number
+  millisecond: number
+}) {
+  return time.minute * 60 + time.second + time.millisecond / 1000
+}
+
+export { formatSecondsToTimeString, formatTimeToSeconds }

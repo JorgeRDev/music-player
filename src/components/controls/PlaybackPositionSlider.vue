@@ -186,7 +186,13 @@ onMounted(() => {
   slider.value?.on("change", (value) => {
     logger.info(`The slider has changed to ${value}`)
     actualSong.value?.setActualDuration(value[0])
+    actualSong.value?.setUserChangedDuration(true)
+    setTimeout(() => {
+      actualSong.value?.setUserChangedDuration(false)
+    }, 100)
   })
+
+  slider.value?.on("start", () => {})
 
   watch(actualDuration, () => {
     if (!isDragging.value) {

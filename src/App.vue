@@ -27,12 +27,12 @@ import { isFullScreen } from "./lib/fullscreen"
 import pino, { Logger } from "pino"
 import { isDragging, tempSliderValue } from "./lib/progressBar"
 import { Configuration } from "../lib/configuration"
+import ProgressBar from "./components/controls/PlaybackPositionSlider.vue"
+import Lyrics from "./components/ui/Lyrics.vue"
 
 const logger: Logger<never, boolean> = pino({
   level: "silent",
 })
-import ProgressBar from "./components/controls/PlaybackPositionSlider.vue"
-import Lyrics from "./components/ui/Lyrics.vue"
 onMounted(async () => {
   logger.info("App mounted")
 
@@ -120,7 +120,7 @@ provide("playPauseSong", playPauseSong)
         <div class="w:40rem">
           <ProgressBar />
         </div>
-        <Lyrics class="f:white" />
+        <Lyrics />
       </div>
     </div>
     <PlayerComponent />

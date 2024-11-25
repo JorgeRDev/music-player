@@ -4,7 +4,7 @@ import { SongInfo } from "../lib/songInfo"
 import type { MusicLibrary } from "../lib/musicLibrary"
 import { watch } from "vue"
 import pino, { Logger } from "pino"
-import { formatTime } from "../lib/time"
+import { formatSecondsToTimeString } from "../../lib/time"
 
 const logger: Logger<never, boolean> = pino({ level: "silent" })
 
@@ -80,7 +80,11 @@ function prepareForPlay(songPath: string | null) {
           <div v-else class="hidden@3xs block@md">
             <p>Unknown Genre</p>
           </div>
-          <p>{{ formatTime(song[1].getMetadata()?.duration ?? 0) }}</p>
+          <p>
+            {{
+              formatSecondsToTimeString(song[1].getMetadata()?.duration ?? 0)
+            }}
+          </p>
         </div>
       </div>
     </div>
