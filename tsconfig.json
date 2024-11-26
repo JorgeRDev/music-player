@@ -21,6 +21,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "electron", "types", "lib/configuration.ts", "lib/readingDirectory.ts", "lib/songMetadata.ts", "lib/time.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "electron", "types", "lib/configuration.ts", "lib/readingDirectory.ts", "lib/songMetadataElectron.ts", "lib/time.ts", "lib/fullscreen.ts", "lib/music.ts", "lib/musicPlayer.ts", "lib/playbackPositionSlider.ts", "lib/progressBar.ts", "lib/songInfo.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

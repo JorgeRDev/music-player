@@ -1,6 +1,6 @@
 import pino from "pino"
 import { base64ToUint8Array } from "uint8array-extras"
-import SongMetadata from "./songMetadata"
+import SongMetadata from "./songMetadataElectron"
 
 const logger = pino({ level: "silent" })
 

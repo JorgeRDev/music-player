@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron"
-import { SongInfo } from "../src/lib/songInfo"
+import { SongInfo } from "../lib/songInfo"
 import { Configuration } from "../lib/configuration"
 import { getLyrics } from "./listeners"
 

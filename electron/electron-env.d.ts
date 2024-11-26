@@ -1,6 +1,6 @@
 /// <reference types="vite-plugin-electron/electron-env" />
 
-import type SongInfo from "../src/lib/songInfo"
+import type SongInfo from "../lib/songInfo"
 
 declare namespace NodeJS {
   interface ProcessEnv {

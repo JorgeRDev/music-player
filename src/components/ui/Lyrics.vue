@@ -1,12 +1,23 @@
 <script setup lang="ts">
 import { Ref, ref, computed, inject, ComputedRef, watch } from "vue"
-import ActualSong from "../../lib/actualSong"
+import ActualSong from "../../../lib/actualSong"
 import { formatTimeToSeconds } from "../../../lib/time"
 import pino, { Logger } from "pino"
 
 const logger: Logger<never, boolean> = pino({ level: "silent" })
 const actualSong: Ref<ActualSong> = inject("actualSong", ref(new ActualSong()))
 
+const { isFullScreen = false } = defineProps<{
+  isFullScreen?: Boolean
+}>()
+
+const nextPlayingName = computed(() =>
+  !isFullScreen ? "next-playing" : "next-playing-fullscreen",
+)
+
+const lyricPlayingName = computed(() =>
+  !isFullScreen ? "lyric-playing" : "lyric-playing-fullscreen",
+)
 const lyrics: Ref<SongLyric[]> = computed(() => {
   actualSong.value.lyrics?.forEach((lyric) => {
     lyric.timeInSeconds = formatTimeToSeconds(lyric.time)
@@ -91,26 +102,45 @@ watch(previousLyricsLength, () => {
     class="rel place-content:center align-items:center h:100% overflow:hidden"
   >
     <div v-if="transitionsEnabled">
-      <Transition name="lyricPlaying" :duration="{ enter: 500, leave: 5000 }">
-        <p :key="transitionKey" class="lyricPlaying-element">
+      <Transition
+        :name="lyricPlayingName"
+        :duration="{ enter: 500, leave: 500 }"
+      >
+        <p
+          :key="transitionKey"
+          class="lyric-playing-element"
+          :class="{ fullscreen: isFullScreen }"
+        >
           {{ lyricPlaying }}
         </p>
       </Transition>
       <Transition
         v-if="transitionsEnabled"
-        name="nextPlaying"
-        :duration="{ enter: 200, leave: 300 }"
+        :name="nextPlayingName"
+        :duration="{ enter: 100, leave: 300 }"
       >
-        <p :key="transitionKey" class="nextPlaying-element">
+        <p
+          :key="transitionKey"
+          class="next-playing-element"
+          :class="{ fullscreen: isFullScreen }"
+        >
           {{ nextLyricToPlay }}
         </p>
       </Transition>
     </div>
     <div v-if="!transitionsEnabled">
-      <p :key="transitionKey" class="lyricPlaying-element">
+      <p
+        :key="transitionKey"
+        class="lyric-playing-element"
+        :class="{ fullscreen: isFullScreen }"
+      >
         {{ lyricPlaying }}
       </p>
-      <p :key="transitionKey" class="nextPlaying-element">
+      <p
+        :key="transitionKey"
+        class="next-playing-element"
+        :class="{ fullscreen: isFullScreen }"
+      >
         {{ nextLyricToPlay }}
       </p>
     </div>
@@ -118,11 +148,11 @@ watch(previousLyricsLength, () => {
 </template>
 
 <style scoped>
-.lyricPlaying-element {
+.lyric-playing-element {
   color: var(--color-text);
   text-align: center;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 1.25rem;
   position: absolute;
   right: 50%;
   top: 35%;
@@ -132,39 +162,71 @@ watch(previousLyricsLength, () => {
   opacity: 1;
 }
 
-.lyricPlaying-enter-active {
+.lyric-playing-element.fullscreen {
+  font-size: 1.625rem;
+  top: 15%;
+}
+
+.lyric-playing-enter-active {
   transition: opacity 0.3s step-end;
 }
 
-.lyricPlaying-enter-from {
+.lyric-playing-enter-from {
   opacity: 0;
 }
-.lyricPlaying-enter-to {
+.lyric-playing-enter-to {
   opacity: 1;
 }
 
-.lyricPlaying-leave-active {
+.lyric-playing-fullscreen-enter-active {
+  transition: opacity 0.3s step-end;
+}
+
+.lyric-playing-fullscreen-enter-from {
+  opacity: 0;
+}
+.lyric-playing-fullscreen-enter-to {
+  opacity: 1;
+}
+
+.lyric-playing-leave-active {
   transition:
     top 1s,
     opacity 0.5s,
-    font-size 1s;
+    font-size 0.5s;
 }
 
-.lyricPlaying-leave-from {
+.lyric-playing-leave-from {
   top: 35%;
   opacity: 1;
 }
-.lyricPlaying-leave-to {
+.lyric-playing-leave-to {
   top: 0%;
   opacity: 0;
   font-size: 10px;
 }
 
-.nextPlaying-element {
+.lyric-playing-fullscreen-leave-active {
+  transition:
+    top 300ms,
+    opacity 300ms,
+    font-size 300ms;
+}
+
+.lyric-playing-fullscreen-leave-from {
+  top: 35%;
+  opacity: 1;
+}
+.lyric-playing-fullscreen-leave-to {
+  top: 0%;
+  opacity: 0;
+  font-size: 10px;
+}
+
+.next-playing-element {
   color: var(--color-text);
   text-align: center;
   font-weight: 500;
-  font-size: 18px;
   position: absolute;
   right: 50%;
   top: 65%;
@@ -172,29 +234,53 @@ watch(previousLyricsLength, () => {
   opacity: 0.5;
   text-wrap: nowrap;
   text-overflow: ellipsis;
+  font-size: 1rem;
+}
+.next-playing-element.fullscreen {
+  font-size: 1.25rem;
+  top: 35%;
 }
 
-.nextPlaying-enter-active {
+.next-playing-enter-active {
   transition: opacity 0.5s ease-in-out;
 }
-.nextPlaying-enter-from {
-}
-.nextPlaying-enter-to {
-}
 
-.nextPlaying-leave-active {
+.next-playing-leave-active {
   transition:
     font-size 0.3s linear,
-    top 0.3s linear;
+    top 0.3s linear,
+    opacity 300ms step-end;
 }
 
-.nextPlaying-leave-from {
+.next-playing-leave-from {
   top: 65%;
 }
 
-.nextPlaying-leave-to {
+.next-playing-leave-to {
   top: 35%;
-  opacity: 1;
-  font-size: 20px;
+  opacity: 0;
+  font-size: 1.25rem;
+}
+
+.next-playing-fullscreen-enter-active {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.next-playing-fullscreen-leave-active {
+  transition:
+    top 300ms linear,
+    opacity 300ms step-end,
+    font-size 300ms linear;
+}
+
+.next-playing-fullscreen-leave-from {
+  font-size: 1.25rem;
+  top: 35%;
+}
+
+.next-playing-fullscreen-leave-to {
+  top: 15% !important;
+  opacity: 0;
+  font-size: 1.625rem !important;
 }
 </style>

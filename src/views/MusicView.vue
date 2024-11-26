@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, ref, Ref } from "vue"
-import { SongInfo } from "../lib/songInfo"
+import { SongInfo } from "../../lib/songInfo"
 import type { MusicLibrary } from "../lib/musicLibrary"
 import { watch } from "vue"
 import pino, { Logger } from "pino"

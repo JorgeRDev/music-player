@@ -16,7 +16,7 @@ import {
 import ActualSong from "../../lib/actualSong"
 import { create as createSlider, API as SliderAPI } from "nouislider"
 import pino from "pino"
-import { slider, isDragging } from "../../lib/playbackPositionSlider"
+import { slider, isDragging } from "../../../lib/playbackPositionSlider"
 
 const logger = pino({
   level: "silent",

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import PlayIcon from "../icons/PlayIcon.vue"
 import { inject, Ref, ref, computed } from "vue"
-import ActualSong from "../../lib/actualSong"
+import ActualSong from "../../../lib/actualSong"
 import PauseIcon from "../icons/PauseIcon.vue"
-
-const playPauseSong = inject("playPauseSong", () => {})
+import { playPauseSong } from "../../../lib/musicPlayer"
 
 const actualSong: Ref<ActualSong> = inject("actualSong", ref(new ActualSong()))
 
