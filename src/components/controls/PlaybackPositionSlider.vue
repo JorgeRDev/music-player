@@ -16,10 +16,10 @@ import {
 import ActualSong from "../../lib/actualSong"
 import { create as createSlider, API as SliderAPI } from "nouislider"
 import pino from "pino"
-import { slider, isDragging } from "../../lib/playbackPositionSlider"
+import { slider, isDragging } from "../../../lib/playbackPositionSlider"
 
 const logger = pino({
-  level: "trace",
+  level: "silent",
 })
 
 const isFullScreen: Ref<boolean> = inject("isFullScreen", ref(false))
@@ -186,7 +186,13 @@ onMounted(() => {
   slider.value?.on("change", (value) => {
     logger.info(`The slider has changed to ${value}`)
     actualSong.value?.setActualDuration(value[0])
+    actualSong.value?.setUserChangedDuration(true)
+    setTimeout(() => {
+      actualSong.value?.setUserChangedDuration(false)
+    }, 100)
   })
+
+  slider.value?.on("start", () => {})
 
   watch(actualDuration, () => {
     if (!isDragging.value) {

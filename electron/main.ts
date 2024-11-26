@@ -1,13 +1,15 @@
-import pino from "pino"
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-
-const logger = pino()
+import {
+  openDirectoriesSelectDialog,
+  getSongMetadata,
+  getSongBuffer,
+} from "./handlers.ts"
+import { getSongsPathFromDirectories, getLyrics } from "./listeners.ts"
+import { readConfiguration } from "../lib/configuration"
 
 let win: BrowserWindow | null
-
-import "./handlers.ts"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -33,16 +35,11 @@ function createWindow() {
     minHeight: 174,
     minWidth: 500,
     titleBarStyle: "hidden",
-    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
       devTools: true,
       preload: path.join(__dirname, "./preload.mjs"),
     },
   })
-
-  logger.info(
-    `The native theme is ${nativeTheme.shouldUseDarkColors ? "dark" : "light"}`,
-  )
 
   win.setBackgroundMaterial("mica")
   // Test active push message to Renderer-process.
@@ -96,28 +93,34 @@ function createWindow() {
   }
 }
 
-// Miniplayer
-let isMiniplayer = false
+ipcMain.handle(
+  "openDirectoriesSelectDialog",
+  async (): Promise<string[] | null> => await openDirectoriesSelectDialog(),
+)
 
-ipcMain.handle("enter-miniplayer", (event) => {
-  isMiniplayer = true
-  win?.setMaximizable(false)
-  win?.setMinimizable(false)
-
-  event.sender.send("miniplayer", isMiniplayer)
+ipcMain.handle("getSongMetadata", async (event, songPath: SongPath) => {
+  return await getSongMetadata(songPath)
 })
 
-ipcMain.handle("leave-miniplayer", (event) => {
-  isMiniplayer = false
-  win?.setMaximizable(true)
-  win?.setMinimizable(true)
-
-  event.sender.send("miniplayer", isMiniplayer)
+ipcMain.handle("getSongBuffer", async (event, songPath: SongPath) => {
+  return await getSongBuffer(songPath)
 })
 
-ipcMain.on("is-miniplayer", (event) => {
-  event.sender.send("is-miniplayer", isMiniplayer)
+ipcMain.handle("readConfiguration", async () => {
+  return await readConfiguration()
 })
+
+ipcMain.on(
+  "getSongsPathFromDirectories",
+  async (event: Electron.IpcMainInvokeEvent, directories: string[]) =>
+    await getSongsPathFromDirectories(event, directories),
+)
+
+ipcMain.on(
+  "getLyrics",
+  async (event: Electron.IpcMainInvokeEvent, songPath: SongPath) =>
+    await getLyrics(event, songPath),
+)
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -136,8 +139,6 @@ app.on("activate", () => {
     createWindow()
   }
 })
-
-app.on
 
 app.whenReady().then(() => {
   createWindow()

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { inject, ref, Ref } from "vue"
-import { SongInfo } from "../lib/songInfo"
+import { SongInfo } from "../../lib/songInfo"
 import type { MusicLibrary } from "../lib/musicLibrary"
 import { watch } from "vue"
 import pino, { Logger } from "pino"
-import { formatTime } from "../lib/time"
+import { formatSecondsToTimeString } from "../../lib/time"
 
 const logger: Logger<never, boolean> = pino({ level: "silent" })
 
@@ -80,7 +80,11 @@ function prepareForPlay(songPath: string | null) {
           <div v-else class="hidden@3xs block@md">
             <p>Unknown Genre</p>
           </div>
-          <p>{{ formatTime(song[1].getMetadata()?.duration ?? 0) }}</p>
+          <p>
+            {{
+              formatSecondsToTimeString(song[1].getMetadata()?.duration ?? 0)
+            }}
+          </p>
         </div>
       </div>
     </div>
@@ -113,8 +117,9 @@ function prepareForPlay(songPath: string | null) {
   flex-direction: column;
   gap: 0.5rem;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: scroll;
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
   scrollbar-width: thin;
   scrollbar-color: var(--color-text) transparent;
 }
@@ -124,6 +129,7 @@ function prepareForPlay(songPath: string | null) {
   height: 4rem;
   min-height: 4rem;
   width: 100%;
+  scroll-snap-align: start;
   display: grid;
   grid-template-columns: 3rem 1fr 1fr 3.5rem;
   border-radius: 1rem;

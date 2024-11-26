@@ -9,13 +9,14 @@ import {
   watch,
   watchEffect,
 } from "vue"
-import ActualSong from "../lib/actualSong"
+import ActualSong from "../../lib/actualSong"
 import ProgressBar from "./controls/PlaybackPositionSlider.vue"
-import { formatTime } from "../lib/time"
+import { formatSecondsToTimeString } from "../../lib/time"
 import pino, { Logger } from "pino"
 import { API as SliderAPI } from "nouislider"
-import PlayButton from "./button/PlayButton.vue"
+import PlayPauseButton from "./button/PlayPauseButton.vue"
 import Lyrics from "./ui/Lyrics.vue"
+import { playPauseSong } from "../../lib/musicPlayer"
 
 const logger: Logger<never, boolean> = pino({ level: "trace" })
 
@@ -23,20 +24,6 @@ const actualSong: Ref<ActualSong | undefined> = inject(
   "actualSong",
   ref(new ActualSong()),
 )
-
-const playPauseSong: () => Promise<void> = inject("playPauseSong", async () => {
-  if (actualSong.value.song === undefined) {
-    throw new Error("Song is undefined. Try calling loadAndPlaySong() first")
-  }
-
-  const isPlaying = await actualSong.value.isPlaying()
-
-  if (isPlaying) {
-    await actualSong.value.pause()
-  } else {
-    await actualSong.value.play()
-  }
-})
 
 const actualDuration: ComputedRef<number> = inject(
   "actualDuration",
@@ -56,11 +43,11 @@ const isFullScreen: Ref<boolean | undefined> = inject(
 )
 
 const totalDurationFormatted = computed(() =>
-  formatTime(totalDuration.value ?? 0),
+  formatSecondsToTimeString(totalDuration.value ?? 0),
 )
 
 const tempSliderValueFormatted = computed(() =>
-  formatTime(tempSliderValue.value ?? 0),
+  formatSecondsToTimeString(tempSliderValue.value ?? 0),
 )
 
 const isDragging: Ref<boolean> = inject("isDragging", ref(false))
@@ -122,10 +109,10 @@ watch(isDraggingComputed, () => {
         </div>
       </div>
       <div class="controls-container">
-        <PlayButton />
+        <PlayPauseButton />
       </div>
+      <Lyrics />
       <div class="settings-container">
-        <Lyrics />
         <button>Menu</button>
       </div>
     </div>
@@ -208,7 +195,7 @@ watch(isDraggingComputed, () => {
   height: 100%;
   max-height: 100%;
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1.5fr;
+  grid-template-columns: 3fr 2fr 2fr 1fr;
   position: absolute;
   align-items: center;
   flex-flow: row nowrap;

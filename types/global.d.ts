@@ -12,3 +12,13 @@ declare interface SongMetadata {
   itemType: string | undefined
   format: string | undefined
 }
+
+declare interface SongLyric {
+  time: {
+    minute: number
+    second: number
+    millisecond: number
+  }
+  timeInSeconds?: number
+  lyric: string
+}

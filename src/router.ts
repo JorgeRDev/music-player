@@ -1,18 +1,18 @@
-import { createWebHashHistory, createRouter } from "vue-router";
+import { createWebHashHistory, createRouter } from "vue-router"
 
-import MusicView from "./views/MusicView.vue";
-import SettingsView from "./views/SettingsView.vue";
-import PlaylistView from "./views/PlaylistView.vue";
+import MusicView from "./views/MusicView.vue"
+import SettingsView from "./views/SettingsView.vue"
+import PlaylistsView from "./views/PlaylistsView.vue"
 
 const routes = [
   { path: "/", component: MusicView },
   { path: "/settings", component: SettingsView },
-  { path: "/playlist", component: PlaylistView },
-];
+  { path: "/playlists", component: PlaylistsView },
+]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
-});
+})
 
-export default router;
+export default router
