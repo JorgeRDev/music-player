@@ -83,14 +83,14 @@ provide("playPauseSong", playPauseSong)
   <Fullscreen v-if="isFullScreen" />
 
   <main
-    v-show="!isFullScreen"
+    v-if="!isFullScreen"
     class="relative height:100% padding-top:$(title-bar-height) max-w:100%"
   >
     <div class="flex flex:row pb:$(player-height) h:100% w:100%">
-      <div class="flex-basis:30%">
+      <div class="flex-basis:32px flex-basis:230px@lg">
         <Menu />
       </div>
-      <div class="views">
+      <div class="block flex-grow:1 views pl:50px pl:10px@lg">
         <RouterView />
       </div>
     </div>
@@ -101,17 +101,3 @@ provide("playPauseSong", playPauseSong)
     </div>
   </main>
 </template>
-
-<style scoped>
-.views {
-  display: none;
-}
-
-@media (min-height: 175px) {
-  .views {
-    display: block;
-    flex-basis: 88%;
-    max-height: 100%;
-  }
-}
-</style>

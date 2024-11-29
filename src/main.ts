@@ -1,15 +1,32 @@
-import { createApp, computed, ref, Ref, readonly } from "vue"
+import {
+  createApp,
+  computed,
+  ref,
+  Ref,
+  readonly,
+} from "vue"
 import "@master/css"
+
+import "./assets/styles/master.css"
+
+window.MasterCSSManual = true
 
 import "./assets/styles/styles.css"
 
 import App from "./App.vue"
 import router from "./router"
 
-const htmlClassList = computed(() => document.documentElement.classList)
-const storagedTheme = window.localStorage.getItem("theme")
-const theme: Ref<"light" | "dark" | "system" | undefined> = ref(undefined)
-const updateTheme = (value: "light" | "dark" | "system") => {
+const htmlClassList = computed(
+  () => document.documentElement.classList
+)
+const storagedTheme =
+  window.localStorage.getItem("theme")
+const theme: Ref<
+  "light" | "dark" | "system" | undefined
+> = ref(undefined)
+const updateTheme = (
+  value: "light" | "dark" | "system"
+) => {
   if (value) {
     theme.value = value
   }
@@ -18,7 +35,10 @@ const updateTheme = (value: "light" | "dark" | "system") => {
 const isDark = computed(
   () =>
     theme.value === "dark" ||
-    (!theme.value && window.matchMedia("(prefers-color-scheme: dark)").matches),
+    (!theme.value &&
+      window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches)
 )
 
 if (storagedTheme != null) {
@@ -30,7 +50,10 @@ if (storagedTheme != null) {
     theme.value === "system"
   }
 } else {
-  htmlClassList.value.toggle("light", !isDark.value)
+  htmlClassList.value.toggle(
+    "light",
+    !isDark.value
+  )
   htmlClassList.value.toggle("dark", isDark.value)
 }
 

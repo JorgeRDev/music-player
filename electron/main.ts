@@ -32,7 +32,7 @@ function createWindow() {
       color: "#f9f9f9",
       height: 32,
     },
-    minHeight: 174,
+    minHeight: 184,
     minWidth: 500,
     titleBarStyle: "hidden",
     webPreferences: {

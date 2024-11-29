@@ -12,10 +12,8 @@ import MusicIcon from "./icons/MusicIcon.vue"
     <div class="rel h:100% w:100%">
       <div class="abs top:0 left:0 w:100% h:100% @webkit-app-region-drag"></div>
       <div class="flex h:100% align-items:center">
-        <div class="aspect:1/1 w:16px h:16px">
-          <MusicIcon />
-        </div>
-        <p class="ml:1rem font-color:$(color-text) f:14px font-weight:medium">
+        <div class="aspect:1/1 w:16px h:16px"></div>
+        <p class="font-color:$(color-text) f:16px font-weight:normal">
           Media Player
         </p>
       </div>
