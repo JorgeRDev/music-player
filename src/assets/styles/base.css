@@ -1,6 +1,7 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
   --c-white: #fff;
+  --c-white-vt-fe: #fefefe;
   --c-white-vt-seasalt: #f9f9f9;
   --c-black-vt-jet: #222;
   --c-black-vt-eerie-black: #1f1f1f;
@@ -13,8 +14,9 @@
   --vt-c-text-light-2: rgb(60 60 60 / 66%);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgb(235 235 235 / 64%);
+
   --color-background: var(--c-white-vt-seasalt);
-  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-soft: var(--c-white-vt-fe);
   --color-background-mute: var(--vt-c-white-mute);
   --color-border: var(--vt-c-divider-light-2);
   --color-border-hover: var(--vt-c-divider-light-1);
@@ -23,11 +25,12 @@
 
   --color-playback-control-slider-background: var(--c-white);
   --color-ui-player-controls-fill: var(--c-black-vt-eerie-black);
+  --color-ui-background-hover: var(--c-white-vt-seasalt);
   --title-bar-height: env(titlebar-area-height, 32px);
   --title-bar-left: env(titlebar-area-x, 0);
   --title-bar-width: env(titlebar-area-width, 100%);
 
-  --player-height: 130px;
+  --player-height: 140px;
 }
 
 @media (prefers-color-scheme: dark) {

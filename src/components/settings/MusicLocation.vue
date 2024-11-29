@@ -2,6 +2,7 @@
 import { computed, inject, ref, Ref } from "vue"
 import type { MusicLibrary } from "../../lib/musicLibrary"
 import pino, { Logger } from "pino"
+import Button from "../button/RemoveButton.vue"
 
 const logger: Logger<never, boolean> = pino({ level: "silent" })
 
@@ -39,27 +40,17 @@ const openDirectoriesSelectDialog = async () => {
 <template>
   <div class="flex place-content:space-between">
     <section>Music library location</section>
-    <button
-      @click="openDirectoriesSelectDialog()"
-      class="bg:$(color-ui-background) bg:$(color-ui-background-hover):hover r:0.4rem p:0.5rem"
-    >
-      Add folder
-    </button>
+    <Button @click="openDirectoriesSelectDialog()">Add folder</Button>
   </div>
-  <div class="flex flex-direction:column">
+  <div class="flex flex-direction:column py:1rem gap:1rem">
     <div
       v-if="musicLibrary.getMusicLibraryPaths().length > 0"
       v-for="(musicLibraryPath, index) in musicLibrary.getMusicLibraryPaths()"
       :key="index"
-      class="flex place-content:space-between"
+      class="flex place-content:space-between align-items:center"
     >
       <p>{{ musicLibraryPath }}</p>
-      <button
-        @click="musicLibrary.removeMusicLibraryPath(index)"
-        class="bg:$(color-ui-background) bg:$(color-ui-background-hover):hover r:0.4rem p:0.5rem"
-      >
-        Remove Library
-      </button>
+      <Button @click="musicLibrary.removeMusicLibraryPath(index)" />
     </div>
   </div>
 </template>

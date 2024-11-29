@@ -17,12 +17,17 @@
   max-height: 80dvh;
 }
 
-@media (max-height: 184px) {
+.view-header {
+  min-height: 7rem;
+  flex-basis: 7rem;
+}
+
+@media (height < 194px) {
   .menu {
     display: none;
   }
 
-  .view {
+  .views {
     display: none;
   }
 }
