@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron"
 import { SongInfo } from "../lib/songInfo"
-import { Configuration } from "../lib/configuration"
+import { Configuration } from "./core/configuration.ts"
 import { getLyrics } from "./listeners"
 
 contextBridge.exposeInMainWorld("App", {
@@ -63,6 +63,11 @@ contextBridge.exposeInMainWorld("App", {
   Configuration: {
     readConfiguration: async (): Promise<Configuration> => {
       return ipcRenderer.invoke("readConfiguration")
+    },
+    saveConfiguration: async (configuration: IUserSettingsData) => {
+      console.log("Saving configuration")
+      ipcRenderer.send("saveConfiguration", configuration)
+      console.log("Saving configuration finished")
     },
   },
 })

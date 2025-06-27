@@ -8,30 +8,30 @@ const configurationFilePath: PathLike = path.join(
   `/temp/configuration.json`,
 )
 
-export interface Configuration {
-  directories: string[]
-  theme: "light" | "dark" | "system"
-}
-
-const defaultConfiguration: Configuration = {
-  directories: [],
+const defaultConfiguration: IUserSettingsData = {
+  musicDirectories: [],
   theme: "system",
+  language: "en",
 }
 
-async function readConfiguration(): Promise<Configuration> {
+async function readConfiguration(): Promise<IUserSettingsData> {
   try {
-    console.log(configurationFilePath)
+    console.log('Reading configuration file')
 
+    console.log('checking if configuration file exists: ', configurationFilePath, '')
     const configurationFilePathExists: boolean = await fsPromise
       .access(configurationFilePath)
       .then(() => true)
       .catch(() => false)
 
     if (!configurationFilePathExists) {
+    console.log('Configuration file does not exist. Creating it: ', configurationFilePath, '')
       await fsPromise.writeFile(
         configurationFilePath,
         JSON.stringify(defaultConfiguration),
       )
+    } else {
+      console.log('Configuration file exists. Reading it: ', configurationFilePath, '')
     }
 
     const configurationFileContent: string = await fsPromise.readFile(
@@ -39,7 +39,7 @@ async function readConfiguration(): Promise<Configuration> {
       "utf-8",
     )
 
-    let configurationFileContentObject: Configuration = JSON.parse(
+    let configurationFileContentObject: IUserSettingsData = JSON.parse(
       configurationFileContent,
     )
 
@@ -49,19 +49,25 @@ async function readConfiguration(): Promise<Configuration> {
   }
 }
 
-async function writeConfiguration(configuration: Configuration): Promise<void> {
+async function writeConfiguration(configuration: IUserSettingsData): Promise<void> {
+
+  console.log('Executing save configuration')
   try {
-    let configurationFileContentObject: Configuration =
+    console.log('Reading previous configuration file')
+    let configurationFileContentObject: IUserSettingsData =
       await readConfiguration()
 
-    if (configuration.directories) {
-      configurationFileContentObject.directories = configuration.directories
+    console.log(`overwriting ${configuration.musicDirectories}`)
+    if (configuration.musicDirectories) {
+      configurationFileContentObject.musicDirectories = configuration.musicDirectories
     }
 
+    console.log(`overwriting ${configuration.theme}`)
     if (configuration.theme) {
       configurationFileContentObject.theme = configuration.theme
     }
 
+    console.log(`overwriting in ${configurationFilePath}:\n\t${JSON.stringify(configurationFileContentObject, null, 2)}`)
     await fsPromise.writeFile(
       configurationFilePath,
       JSON.stringify(configurationFileContentObject),

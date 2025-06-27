@@ -1,6 +1,6 @@
 declare type SongPath = string
 
-declare interface SongMetadata {
+declare interface ISongMetadata {
   title: string | undefined
   frontCover: string | undefined
   year: number | undefined
@@ -13,7 +13,13 @@ declare interface SongMetadata {
   format: string | undefined
 }
 
-declare interface SongLyric {
+declare interface IUserSettingsData {
+  musicDirectories: string[],
+  theme: "light" | "dark" | "system"
+  language: "en" | "es"
+}
+
+declare interface ISongLyric {
   time: {
     minute: number
     second: number

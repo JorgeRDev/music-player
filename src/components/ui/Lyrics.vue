@@ -8,7 +8,7 @@
     watch,
   } from "vue"
   import ActualSong from "../../../lib/actualSong"
-  import { formatTimeToSeconds } from "../../../lib/time"
+  import { formatTimeToSeconds } from "../../utils/timeFormatting.ts"
   import pino, { Logger } from "pino"
 
   const logger: Logger<never, boolean> = pino({

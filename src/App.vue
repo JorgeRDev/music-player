@@ -23,24 +23,21 @@ import {
   totalDuration,
   playPauseSong,
 } from "../lib/musicPlayer"
-import { isFullScreen } from "../lib/fullscreen"
-import pino, { Logger } from "pino"
 import { isDragging, tempSliderValue } from "../lib/progressBar"
-import { Configuration } from "../lib/configuration"
+import { Configuration } from "../electron/core/configuration.ts"
 import ProgressBar from "./components/controls/PlaybackPositionSlider.vue"
 import Lyrics from "./components/ui/Lyrics.vue"
 import Fullscreen from "./components/ui/Fullscreen.vue"
+import {useAppState} from "./stores/appState.ts"
+import {useUserSettings} from "./stores/userSettings.ts";
 
-const logger: Logger<never, boolean> = pino({
-  level: "silent",
-})
+const appState = useAppState()
+const userSettings = useUserSettings()
+
 onMounted(async () => {
-  logger.info("App mounted")
+  await userSettings.loadConfiguration()
 
-  const configuration: Configuration =
-    await window.App.Configuration.readConfiguration()
-
-  for (const directory of configuration.directories) {
+  for (const directory of userSettings.musicDirectories) {
     musicLibrary.addMusicLibraryPath(directory)
   }
 
@@ -53,22 +50,13 @@ onMounted(async () => {
   ref("system"),
 ) */
 
-watchEffect(() => {
-  window.App.FullScreen.onFullScreen((_isFullScreen) => {
-    logger.info(`fullscreen event has returned ${_isFullScreen}`)
-
-    isFullScreen.value = _isFullScreen
-  })
-})
-
 onBeforeUnmount(() => {
-  logger.trace("clearing all before unmounting")
   musicLibrary.clearAll()
 })
 
 provide("musicLibrary", musicLibrary)
 provide("loadAndPlaySong", loadAndPlaySong)
-provide("isFullScreen", isFullScreen)
+provide("isFullScreen", appState.fullscreen)
 provide("actualSong", actualSong)
 provide("actualDuration", actualDuration)
 provide("totalDuration", totalDuration)
@@ -78,12 +66,12 @@ provide("playPauseSong", playPauseSong)
 </script>
 
 <template>
-  <TitleBar v-if="!isFullScreen" />
+  <TitleBar v-if="!appState.fullscreen" />
 
-  <Fullscreen v-if="isFullScreen" />
+  <Fullscreen v-if="appState.fullscreen" />
 
   <main
-    v-if="!isFullScreen"
+    v-if="!appState.fullscreen"
     class="relative height:100% padding-top:$(title-bar-height) max-w:100%"
   >
     <div class="flex flex:row pb:$(player-height) h:100% w:100%">

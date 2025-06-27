@@ -4,7 +4,7 @@
   import { MusicLibrary } from "../../lib/musicLibrary"
   import { watch } from "vue"
   import pino, { Logger } from "pino"
-  import { formatSecondsToTimeString } from "../../lib/time"
+  import { formatSecondsToTimeString } from "../utils/timeFormatting.ts"
   import FrontCover from "../components/ui/FrontCover.vue"
   const logger: Logger<never, boolean> = pino({
     level: "silent",

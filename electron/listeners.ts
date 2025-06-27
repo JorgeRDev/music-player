@@ -5,7 +5,7 @@ import readDirRecursively from "../lib/readingDirectory"
 import path from "path"
 import fsPromise from "fs/promises"
 import { PathLike } from "original-fs"
-import { Configuration } from "../lib/configuration"
+import { Configuration } from "./core/configuration.ts"
 
 const logger = pino({ level: "trace" })
 

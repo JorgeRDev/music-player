@@ -51,7 +51,8 @@ declare global {
         onFullScreen: (callback: (arg: boolean) => void) => void
       }
       Configuration: {
-        readConfiguration: () => Promise<Configuration>
+        readConfiguration: () => Promise<IUserSettingsData>,
+        saveConfiguration: (configuration: IUserSettingsData) => Promise<void>
       }
     }
   }

@@ -7,7 +7,7 @@ import {
   getSongBuffer,
 } from "./handlers.ts"
 import { getSongsPathFromDirectories, getLyrics } from "./listeners.ts"
-import { readConfiguration } from "../lib/configuration"
+import {readConfiguration, writeConfiguration} from "./core/configuration.ts"
 
 let win: BrowserWindow | null
 
@@ -121,6 +121,10 @@ ipcMain.on(
   async (event: Electron.IpcMainInvokeEvent, songPath: SongPath) =>
     await getLyrics(event, songPath),
 )
+
+ipcMain.on("saveConfiguration", async (event, configuration) => {
+  await writeConfiguration(configuration)
+})
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

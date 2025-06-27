@@ -11,7 +11,7 @@
   } from "vue"
   import ActualSong from "../../lib/actualSong"
   import ProgressBar from "./controls/PlaybackPositionSlider.vue"
-  import { formatSecondsToTimeString } from "../../lib/time"
+  import { formatSecondsToTimeString } from "../utils/timeFormatting.ts"
   import pino, { Logger } from "pino"
   import { API as SliderAPI } from "nouislider"
   import PlayPauseButton from "./button/PlayPauseButton.vue"

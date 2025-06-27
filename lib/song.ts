@@ -1,6 +1,7 @@
 import pino from "pino"
 import { base64ToUint8Array } from "uint8array-extras"
 import SongMetadata from "./songMetadataElectron"
+import {ISong} from "../src/models/songInterface.ts";
 
 const logger = pino({ level: "silent" })
 
@@ -11,7 +12,7 @@ const logger = pino({ level: "silent" })
  * It manages song data like buffers, blobs, metadata and cover art.
  */
 
-export default class Song {
+export default class Song implements ISong{
   songPath: SongPath | undefined
   buffer: Buffer | undefined
   blob: Blob | undefined

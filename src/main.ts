@@ -6,7 +6,7 @@ import {
   readonly,
 } from "vue"
 import "@master/css"
-
+import {createPinia} from "pinia"
 import "./assets/styles/master.css"
 
 window.MasterCSSManual = true
@@ -68,7 +68,10 @@ if (storagedTheme != null) {
     app.provide('isDark', isDark) */
 
 const app = createApp(App)
+const pinia = createPinia()
+
 app.use(router)
+app.use(pinia)
 app.mount("#app")
 
 /* nextTick(() => {
